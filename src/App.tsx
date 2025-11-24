@@ -130,7 +130,7 @@ function App() {
                 <span className="hidden sm:inline">GitHub</span>
               </a>
               <a
-                href="https://www.npmjs.com/package/react-file-preview"
+                href="https://www.npmjs.com/package/@eternalheart/react-file-preview"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-all hover:scale-105"
@@ -350,7 +350,7 @@ type PreviewFileInput = File | PreviewFileLink | string;`}
               <h3 className="text-xl font-semibold text-white mb-4">使用示例</h3>
               <div className="bg-black/30 rounded-lg p-4 font-mono text-sm overflow-x-auto">
                 <pre className="text-gray-300">
-                  {`import { FilePreviewModal } from 'react-file-preview';
+                  {`import { FilePreviewModal } from '@eternalheart/react-file-preview';
 import { useState } from 'react';
 
 function App() {
@@ -468,7 +468,7 @@ function App() {
             </a>
             {' '} · {' '}
             <a
-              href="https://www.npmjs.com/package/react-file-preview"
+              href="https://www.npmjs.com/package/@eternalheart/react-file-preview"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-gray-400 transition-colors"

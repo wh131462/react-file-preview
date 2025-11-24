@@ -1,4 +1,4 @@
-# React File Preview [![npm version](https://img.shields.io/npm/v/react-file-preview.svg)](https://www.npmjs.com/package/react-file-preview)[![license](https://img.shields.io/npm/l/react-file-preview.svg)](https://github.com/wh131462/react-file-preview/blob/master/LICENSE)[![downloads](https://img.shields.io/npm/dm/react-file-preview.svg)](https://www.npmjs.com/package/react-file-preview)
+# React File Preview [![npm version](https://img.shields.io/npm/v/@eternalheart/react-file-preview.svg)](https://www.npmjs.com/package/@eternalheart/react-file-preview)[![license](https://img.shields.io/npm/l/@eternalheart/react-file-preview.svg)](https://github.com/wh131462/react-file-preview/blob/master/LICENSE)[![downloads](https://img.shields.io/npm/dm/@eternalheart/react-file-preview.svg)](https://www.npmjs.com/package/@eternalheart/react-file-preview)
 
 [English](./README.md) | 简体中文
 
@@ -33,10 +33,21 @@ yarn add react-file-preview
 pnpm add react-file-preview
 ```
 
+**重要提示：** 你还需要导入 CSS 文件：
+
+```tsx
+import 'react-file-preview/style.css';
+```
+
 ## 🚀 快速开始
+
+📖 **第一次使用？** 查看 [快速开始指南](./QUICK_START.md) 获取 5 分钟入门教程！
+
+### 基础用法
 
 ```tsx
 import { FilePreviewModal } from 'react-file-preview';
+import 'react-file-preview/style.css';
 import { useState } from 'react';
 
 function App() {
@@ -45,12 +56,8 @@ function App() {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleFileSelect = (file: File) => {
-    const previewFile = {
-      name: file.name,
-      type: file.type,
-      url: URL.createObjectURL(file),
-    };
-    setFiles([previewFile]);
+    // 方法 1: 直接传入 File 对象（推荐）
+    setFiles([file]);
     setCurrentIndex(0);
     setIsOpen(true);
   };
@@ -61,7 +68,7 @@ function App() {
         type="file"
         onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
       />
-      
+
       <FilePreviewModal
         files={files}
         currentIndex={currentIndex}
@@ -74,12 +81,48 @@ function App() {
 }
 ```
 
+### 多种输入类型
+
+组件支持三种类型的文件输入：
+
+```tsx
+import { FilePreviewModal, PreviewFileInput } from '@eternalheart/react-file-preview';
+import '@eternalheart/react-file-preview/style.css';
+
+function App() {
+  const files: PreviewFileInput[] = [
+    // 1. 原生 File 对象
+    file1,
+
+    // 2. HTTP URL 字符串
+    'https://example.com/image.jpg',
+
+    // 3. 带元数据的文件对象
+    {
+      name: 'document.pdf',
+      type: 'application/pdf',
+      url: '/path/to/document.pdf',
+      size: 1024,
+    },
+  ];
+
+  return (
+    <FilePreviewModal
+      files={files}
+      currentIndex={0}
+      isOpen={true}
+      onClose={() => {}}
+    />
+  );
+}
+```
+
 ## 💡 使用示例
 
 ### 预览 PowerPoint 文件
 
 ```tsx
-import { FilePreviewModal } from 'react-file-preview';
+import { FilePreviewModal } from '@eternalheart/react-file-preview';
 import { useState } from 'react';
 
 function PptPreview() {
@@ -255,7 +298,39 @@ const files = [
 - `→` - 下一个文件
 - `滚轮` - 缩放图片 (仅图片预览)
 
+## 📚 文档
+
+- [在线演示](https://wh131462.github.io/react-file-preview) - 在线 Demo
+
+## 📦 包信息
+
+### 打包体积
+
+- **ESM**: ~54 KB (gzipped: ~12 KB)
+- **CJS**: ~37 KB (gzipped: ~11 KB)
+- **CSS**: ~56 KB (gzipped: ~14 KB)
+
+### Peer Dependencies
+
+- `react`: ^18.0.0
+- `react-dom`: ^18.0.0
+
+### 导出
+
+```json
+{
+  ".": {
+    "types": "./lib/index.d.ts",
+    "import": "./lib/index.mjs",
+    "require": "./lib/index.cjs"
+  },
+  "./style.css": "./lib/index.css"
+}
+```
+
 ## 🛠️ 开发
+
+### 库开发
 
 ```bash
 # 克隆仓库
@@ -264,14 +339,31 @@ git clone https://github.com/wh131462/react-file-preview.git
 # 安装依赖
 pnpm install
 
-# 启动开发服务器
+# 启动开发服务器（演示应用）
 pnpm dev
 
-# 构建
-pnpm build
+# 构建库（用于 npm 发布）
+pnpm build:lib
 
-# 预览构建结果
-pnpm preview
+# 构建演示应用（用于 GitHub Pages）
+pnpm build:demo
+```
+
+### 项目结构
+
+```
+react-file-preview/
+├── src/
+│   ├── index.ts              # 库入口文件
+│   ├── FilePreviewModal.tsx  # 主组件
+│   ├── types.ts              # 类型定义
+│   ├── utils/                # 工具函数
+│   ├── renderers/            # 文件类型渲染器
+│   ├── App.tsx               # 演示应用
+│   └── main.tsx              # 演示应用入口
+├── lib/                      # 构建后的库（npm 包）
+├── dist/                     # 构建后的演示应用（GitHub Pages）
+└── vite.config.lib.ts        # 库构建配置
 ```
 
 ## 📄 许可证
@@ -285,6 +377,7 @@ pnpm preview
 ## 🔗 相关链接
 
 - [GitHub](https://github.com/wh131462/react-file-preview)
-- [npm](https://www.npmjs.com/package/react-file-preview)
+- [npm](https://www.npmjs.com/package/@eternalheart/react-file-preview)
+- [在线演示](https://wh131462.github.io/react-file-preview)
 - [问题反馈](https://github.com/wh131462/react-file-preview/issues)
 

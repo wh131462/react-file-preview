@@ -1,0 +1,45 @@
+# 源代码（只发布编译后的代码）
+src/
+public/
+scripts/
+
+# 配置文件
+.github/
+.vscode/
+*.config.js
+*.config.ts
+tsconfig.json
+tsconfig.node.json
+tsconfig.lib.json
+.eslintrc.*
+.prettierrc
+.editorconfig
+
+# 构建产物（演示应用）
+dist/
+node_modules/
+
+# 开发文件
+*.log
+*.lock
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# 测试文件
+**/*.test.ts
+**/*.test.tsx
+**/__tests__/
+
+# 文档（保留 README 和 LICENSE）
+FEATURE_UPDATE.md
+MIGRATION_GUIDE.md
+
+# 其他
+.DS_Store
+*.local
+.env
+.env.local
+.env.*.local
+index.html
+

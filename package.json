@@ -1,8 +1,24 @@
 {
-  "name": "react-file-preview",
+  "name": "@eternalheart/react-file-preview",
   "version": "1.0.0",
   "description": "A modern, feature-rich file preview component for React with support for images, videos, audio, PDFs, Office documents (Word, Excel, PowerPoint), Markdown, and code files.",
   "type": "module",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.mjs",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.cjs"
+    },
+    "./style.css": "./lib/index.css"
+  },
+  "files": [
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "react",
     "file-preview",
@@ -29,6 +45,9 @@
     "url": "https://github.com/wh131462/react-file-preview/issues"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "author": {
     "name": "EternalHeart",
     "email": "hao131462@qq.com",
@@ -37,15 +56,22 @@
   "packageManager": "pnpm@10.15.0",
   "scripts": {
     "dev": "pnpm copy-pdf-worker && vite",
-    "build": "pnpm copy-pdf-worker && tsc && vite build",
+    "build": "pnpm build:demo",
+    "build:demo": "pnpm copy-pdf-worker && tsc && vite build",
+    "build:lib": "vite build --config vite.config.lib.ts && tsc --project tsconfig.lib.json",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "copy-pdf-worker": "node -e \"require('fs').copyFileSync('node_modules/pdfjs-dist/build/pdf.worker.min.mjs', 'public/pdf.worker.min.mjs')\"",
     "generate-favicon": "node scripts/generate-favicon.js",
     "postinstall": "pnpm copy-pdf-worker",
-    "predeploy": "pnpm build",
+    "predeploy": "pnpm build:demo",
     "deploy": "gh-pages -d dist",
-    "pub": "pnpm lint && pnpm build && npm publish"
+    "prepublishOnly": "pnpm build:lib",
+    "pub": "npm publish --registry https://registry.npmjs.com"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "dependencies": {
     "@types/react-syntax-highlighter": "^15.5.13",
@@ -56,8 +82,6 @@
     "mammoth": "^1.8.0",
     "pdfjs-dist": "4.8.69",
     "pptx-preview": "^1.0.7",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "react-markdown": "^10.1.0",
     "react-pdf": "9.2.1",
     "react-syntax-highlighter": "^16.1.0",
@@ -66,6 +90,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
@@ -78,6 +103,8 @@
     "eslint-plugin-react-refresh": "^0.4.14",
     "gh-pages": "^6.3.0",
     "postcss": "^8.4.49",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "sharp": "^0.34.5",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3",

@@ -1,4 +1,4 @@
-# React File Preview [![npm version](https://img.shields.io/npm/v/react-file-preview.svg)](https://www.npmjs.com/package/react-file-preview)[![license](https://img.shields.io/npm/l/react-file-preview.svg)](https://github.com/wh131462/react-file-preview/blob/master/LICENSE)[![downloads](https://img.shields.io/npm/dm/react-file-preview.svg)](https://www.npmjs.com/package/react-file-preview)
+# React File Preview [![npm version](https://img.shields.io/npm/v/@eternalheart/@eternalheart/react-file-preview.svg)](https://www.npmjs.com/package/@eternalheart/react-file-preview)[![license](https://img.shields.io/npm/l/@eternalheart/react-file-preview.svg)](https://github.com/wh131462/react-file-preview/blob/master/LICENSE)[![downloads](https://img.shields.io/npm/dm/@eternalheart/react-file-preview.svg)](https://www.npmjs.com/package/@eternalheart/react-file-preview)
 
 English | [简体中文](./README.zh-CN.md)
 
@@ -26,19 +26,30 @@ A modern, feature-rich file preview component for React with support for images,
 
 ```bash
 # Using npm
-npm install react-file-preview
+npm install @eternalheart/react-file-preview
 
 # Using yarn
-yarn add react-file-preview
+yarn add @eternalheart/react-file-preview
 
 # Using pnpm
-pnpm add react-file-preview
+pnpm add @eternalheart/react-file-preview
+```
+
+**Important:** You also need to import the CSS file:
+
+```tsx
+import '@eternalheart/react-file-preview/style.css';
 ```
 
 ## 🚀 Quick Start
 
+📖 **New to this library?** Check out the [Quick Start Guide](./QUICK_START.md) for a 5-minute introduction!
+
+### Basic Usage
+
 ```tsx
-import { FilePreviewModal } from 'react-file-preview';
+import { FilePreviewModal } from '@eternalheart/react-file-preview';
+import '@eternalheart/react-file-preview/style.css';
 import { useState } from 'react';
 
 function App() {
@@ -47,12 +58,8 @@ function App() {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleFileSelect = (file: File) => {
-    const previewFile = {
-      name: file.name,
-      type: file.type,
-      url: URL.createObjectURL(file),
-    };
-    setFiles([previewFile]);
+    // Method 1: Directly pass File object (recommended)
+    setFiles([file]);
     setCurrentIndex(0);
     setIsOpen(true);
   };
@@ -63,7 +70,7 @@ function App() {
         type="file"
         onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
       />
-      
+
       <FilePreviewModal
         files={files}
         currentIndex={currentIndex}
@@ -76,12 +83,48 @@ function App() {
 }
 ```
 
+### Multiple Input Types
+
+The component supports three types of file inputs:
+
+```tsx
+import { FilePreviewModal, PreviewFileInput } from '@eternalheart/react-file-preview';
+import '@eternalheart/react-file-preview/style.css';
+
+function App() {
+  const files: PreviewFileInput[] = [
+    // 1. Native File object
+    file1,
+
+    // 2. HTTP URL string
+    'https://example.com/image.jpg',
+
+    // 3. File object with metadata
+    {
+      name: 'document.pdf',
+      type: 'application/pdf',
+      url: '/path/to/document.pdf',
+      size: 1024,
+    },
+  ];
+
+  return (
+    <FilePreviewModal
+      files={files}
+      currentIndex={0}
+      isOpen={true}
+      onClose={() => {}}
+    />
+  );
+}
+```
+
 ## 💡 Usage Examples
 
 ### Preview PowerPoint Files
 
 ```tsx
-import { FilePreviewModal } from 'react-file-preview';
+import { FilePreviewModal } from '@eternalheart/react-file-preview';
 import { useState } from 'react';
 
 function PptPreview() {
@@ -257,7 +300,39 @@ The component is built with Tailwind CSS. You can customize styles by overriding
 - `→` - Next file
 - `Mouse Wheel` - Zoom image (image preview only)
 
+## 📚 Documentation
+
+- [Online Demo](https://wh131462.github.io/react-file-preview) - Live demo
+
+## 📦 Package Information
+
+### Bundle Size
+
+- **ESM**: ~54 KB (gzipped: ~12 KB)
+- **CJS**: ~37 KB (gzipped: ~11 KB)
+- **CSS**: ~56 KB (gzipped: ~14 KB)
+
+### Peer Dependencies
+
+- `react`: ^18.0.0
+- `react-dom`: ^18.0.0
+
+### Exports
+
+```json
+{
+  ".": {
+    "types": "./lib/index.d.ts",
+    "import": "./lib/index.mjs",
+    "require": "./lib/index.cjs"
+  },
+  "./style.css": "./lib/index.css"
+}
+```
+
 ## 🛠️ Development
+
+### For Library Development
 
 ```bash
 # Clone repository
@@ -266,14 +341,31 @@ git clone https://github.com/wh131462/react-file-preview.git
 # Install dependencies
 pnpm install
 
-# Start dev server
+# Start dev server (demo app)
 pnpm dev
 
-# Build
-pnpm build
+# Build library (for npm)
+pnpm build:lib
 
-# Preview build
-pnpm preview
+# Build demo app (for GitHub Pages)
+pnpm build:demo
+```
+
+### Project Structure
+
+```
+react-file-preview/
+├── src/
+│   ├── index.ts              # Library entry point
+│   ├── FilePreviewModal.tsx  # Main component
+│   ├── types.ts              # Type definitions
+│   ├── utils/                # Utility functions
+│   ├── renderers/            # File type renderers
+│   ├── App.tsx               # Demo app
+│   └── main.tsx              # Demo app entry
+├── lib/                      # Built library (npm package)
+├── dist/                     # Built demo app (GitHub Pages)
+└── vite.config.lib.ts        # Library build config
 ```
 
 ## 📄 License
@@ -287,5 +379,6 @@ Issues and Pull Requests are welcome!
 ## 🔗 Links
 
 - [GitHub](https://github.com/wh131462/react-file-preview)
-- [npm](https://www.npmjs.com/package/react-file-preview)
+- [npm](https://www.npmjs.com/package/@eternalheart/react-file-preview)
+- [Online Demo](https://wh131462.github.io/react-file-preview)
 - [Issue Tracker](https://github.com/wh131462/react-file-preview/issues)

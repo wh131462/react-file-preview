@@ -52,7 +52,7 @@ jobs:
         if: steps.extract-version.outputs.version != ''
         run: |
           CURRENT_TAG=${{ steps.extract-version.outputs.version }}
-          NPM="https://www.npmjs.com/package/react-file-preview"
+          NPM="https://www.npmjs.com/package/@eternalheart/react-file-preview"
           # 获取最近的合法版本标签
           git fetch --tags
           PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -E '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$' | sed -n 2p)
