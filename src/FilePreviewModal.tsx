@@ -82,7 +82,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1); // PDF 总页数,由 PdfRenderer 更新
+  const [, setTotalPages] = useState(1); // PDF 总页数,由 PdfRenderer 更新
 
   const currentFile = files[currentIndex];
   const fileType = currentFile ? getFileType(currentFile) : 'unsupported';

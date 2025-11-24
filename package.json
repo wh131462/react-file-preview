@@ -14,7 +14,7 @@
     "markdown-viewer",
     "code-viewer"
   ],
-  "homepage": "https://github.com/wh131462/react-file-preview#readme",
+  "homepage": "https://wh131462.github.io/react-file-preview",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wh131462/react-file-preview.git"
@@ -35,9 +35,11 @@
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "copy-pdf-worker": "node -e \"require('fs').copyFileSync('node_modules/pdfjs-dist/build/pdf.worker.min.mjs', 'public/pdf.worker.min.mjs')\"",
+    "generate-favicon": "node scripts/generate-favicon.js",
     "postinstall": "pnpm copy-pdf-worker",
-    "deploy": "pnpm build && pnpm preview",
-    "release": "pnpm lint && pnpm build"
+    "predeploy": "pnpm build",
+    "deploy": "gh-pages -d dist",
+    "pub": "pnpm lint && pnpm build && npm publish"
   },
   "dependencies": {
     "@types/react-syntax-highlighter": "^15.5.13",
@@ -63,10 +65,13 @@
     "@typescript-eslint/parser": "^8.15.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "cli-real-favicon": "^0.0.9",
     "eslint": "^9.15.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
+    "gh-pages": "^6.3.0",
     "postcss": "^8.4.49",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3",
     "vite": "^5.4.11"
