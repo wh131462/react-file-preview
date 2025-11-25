@@ -16,7 +16,7 @@
     "preview:docs": "pnpm --filter @eternalheart/react-file-preview-docs preview",
     "clean": "pnpm -r exec rm -rf dist lib .vitepress/dist node_modules && rm -rf node_modules dist-deploy",
     "lint": "eslint packages --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "deploy": "bash scripts/deploy.sh",
+    "gh": "bash scripts/deploy.sh",
     "version:patch": "pnpm --filter @eternalheart/react-file-preview version:patch",
     "version:minor": "pnpm --filter @eternalheart/react-file-preview version:minor",
     "version:major": "pnpm --filter @eternalheart/react-file-preview version:major",

@@ -345,8 +345,8 @@ function App() {
         customRenderers={useMemo<CustomRenderer[]>(() => [
           // 自定义 JSON 渲染器示例
           {
-            test: (file) => file.name.endsWith('.json'),
-            render: (file) => (
+            test: (file: PreviewFile) => file.name.endsWith('.json'),
+            render: (file: PreviewFile) => (
               <div className="w-full h-full flex items-center justify-center p-8">
                 <div className="bg-gray-900 rounded-lg p-6 max-w-4xl w-full max-h-full overflow-auto">
                   <div className="flex items-center gap-2 mb-4 text-blue-400">

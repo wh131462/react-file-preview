@@ -10,6 +10,12 @@ rm -rf dist-deploy
 # 创建部署目录
 mkdir -p dist-deploy
 
+# 构建核心库
+echo "构建核心库..."
+cd packages/react-file-preview
+pnpm build
+cd ../..
+
 # 构建示例项目
 echo "构建示例项目..."
 cd packages/example
