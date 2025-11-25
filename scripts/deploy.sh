@@ -46,7 +46,17 @@ cd dist-deploy
 git init
 git add -A
 git commit -m "Deploy to GitHub Pages"
-git push -f git@github.com:wh131462/react-file-preview.git main:gh-pages
+
+# 检测是否在 CI 环境中
+if [ -n "$GITHUB_ACTIONS" ]; then
+  # CI 环境：使用 HTTPS 和 GITHUB_TOKEN
+  echo "检测到 CI 环境，使用 HTTPS 推送..."
+  git push -f https://x-access-token:${GITHUB_TOKEN}@github.com/wh131462/react-file-preview.git HEAD:gh-pages
+else
+  # 本地环境：使用 SSH
+  echo "本地环境，使用 SSH 推送..."
+  git push -f git@github.com:wh131462/react-file-preview.git HEAD:gh-pages
+fi
 
 cd ..
 rm -rf dist-deploy
