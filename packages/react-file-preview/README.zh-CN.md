@@ -39,12 +39,6 @@ pnpm add react-file-preview
 import 'react-file-preview/style.css';
 ```
 
-**PDF 支持：** PDF.js worker 已在库内部自动配置。库会：
-1. 优先尝试使用打包的静态文件（位于 `lib/pdfjs/` 目录）
-2. 如果静态文件加载失败，自动降级使用 CDN
-
-无需额外配置！
-
 ## 🚀 快速开始
 
 📖 **第一次使用？** 查看 [快速开始指南](./QUICK_START.md) 获取 5 分钟入门教程！

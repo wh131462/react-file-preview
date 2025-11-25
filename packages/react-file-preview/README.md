@@ -41,12 +41,6 @@ pnpm add @eternalheart/react-file-preview
 import '@eternalheart/react-file-preview/style.css';
 ```
 
-**PDF Support:** PDF.js worker is automatically configured within the library. The library will:
-1. First try to use the bundled static files (located in `lib/pdfjs/`)
-2. Fall back to CDN if static files fail to load
-
-No additional configuration is required!
-
 ## 🚀 Quick Start
 
 📖 **New to this library?** Check out the [Quick Start Guide](./QUICK_START.md) for a 5-minute introduction!
