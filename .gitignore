@@ -13,8 +13,8 @@ dist-ssr
 dist-deploy
 lib
 *.local
-.vitepress/cache
-.vitepress/dist
+**/**/.vitepress/cache
+**/**/.vitepress/dist
 
 # Editor directories and files
 .vscode/*

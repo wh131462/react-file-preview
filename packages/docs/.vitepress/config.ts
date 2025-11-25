@@ -6,10 +6,16 @@ const EXAMPLE_URL = isDev
   ? 'http://localhost:5173/'
   : 'https://wh131462.github.io/react-file-preview/'
 
+const base = '/react-file-preview/docs/'
+
 export default defineConfig({
   title: 'React File Preview',
   description: 'A modern, feature-rich file preview component for React',
-  base: '/react-file-preview/docs/',
+  base,
+
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}icon.svg` }],
+  ],
 
   themeConfig: {
     logo: '/icon.svg',
