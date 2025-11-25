@@ -17,7 +17,13 @@
     "clean": "pnpm -r exec rm -rf dist lib .vitepress/dist node_modules && rm -rf node_modules dist-deploy",
     "lint": "eslint packages --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "deploy": "bash scripts/deploy.sh",
-    "pub": "pnpm --filter @eternalheart/react-file-preview pub"
+    "version:patch": "pnpm --filter @eternalheart/react-file-preview version:patch",
+    "version:minor": "pnpm --filter @eternalheart/react-file-preview version:minor",
+    "version:major": "pnpm --filter @eternalheart/react-file-preview version:major",
+    "pub": "pnpm --filter @eternalheart/react-file-preview pub",
+    "pub:patch": "pnpm version:patch && pnpm pub",
+    "pub:minor": "pnpm version:minor && pnpm pub",
+    "pub:major": "pnpm version:major && pnpm pub"
   },
   "repository": {
     "type": "git",

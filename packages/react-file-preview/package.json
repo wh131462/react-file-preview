@@ -1,6 +1,6 @@
 {
   "name": "@eternalheart/react-file-preview",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A modern, feature-rich file preview component for React with support for images, videos, audio, PDFs, Office documents (Word, Excel, PowerPoint), Markdown, and code files.",
   "type": "module",
   "main": "./lib/index.cjs",
@@ -58,7 +58,13 @@
     "build": "vite build && tsc --project tsconfig.json",
     "dev": "vite build --watch",
     "prepublishOnly": "pnpm build",
-    "pub": "npm publish --registry https://registry.npmjs.com"
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major",
+    "pub": "npm publish --registry https://registry.npmjs.com",
+    "pub:patch": "pnpm version:patch && pnpm pub",
+    "pub:minor": "pnpm version:minor && pnpm pub",
+    "pub:major": "pnpm version:major && pnpm pub"
   },
   "peerDependencies": {
     "react": "^18.0.0",
