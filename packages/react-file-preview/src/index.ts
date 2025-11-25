@@ -1,6 +1,12 @@
 // 导入样式
 import './index.css';
 
+// 导入版本号
+import packageJson from '../package.json';
+
+// 导出版本号
+export const VERSION = packageJson.version;
+
 // 导出主组件
 export { FilePreviewModal } from './FilePreviewModal';
 

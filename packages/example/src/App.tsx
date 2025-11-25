@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
-import { FilePreviewModal } from '@eternalheart/react-file-preview';
+import { FilePreviewModal, VERSION } from '@eternalheart/react-file-preview';
 import type { PreviewFile, PreviewFileInput, CustomRenderer } from '@eternalheart/react-file-preview';
 import '@eternalheart/react-file-preview/style.css';
 import { FileText, Image, FileSpreadsheet, Video, Music, Upload, X, Package, BookOpen, Code } from 'lucide-react';
@@ -143,7 +143,9 @@ function App() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">React File Preview</h1>
-                <p className="text-xs text-gray-400">v{packageJson.version}</p>
+                <p className="text-xs text-gray-400">
+                  示例 v{packageJson.version} · 库 v{VERSION}
+                </p>
               </div>
             </div>
 
