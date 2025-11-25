@@ -1,0 +1,69 @@
+import { defineConfig } from 'vitepress'
+
+// 环境检测：开发环境和生产环境的 URL
+const isDev = process.env.NODE_ENV !== 'production'
+const EXAMPLE_URL = isDev
+  ? 'http://localhost:5173/'
+  : 'https://wh131462.github.io/react-file-preview/'
+
+export default defineConfig({
+  title: 'React File Preview',
+  description: 'A modern, feature-rich file preview component for React',
+  base: '/react-file-preview/docs/',
+
+  themeConfig: {
+    logo: '/icon.svg',
+
+    nav: [
+      { text: '首页', link: '/' },
+      { text: '指南', link: '/guide/getting-started' },
+      { text: 'API', link: '/api/components' },
+      { text: '在线示例', link: EXAMPLE_URL, target: '_blank' }
+    ],
+
+    sidebar: {
+      '/guide/': [
+        {
+          text: '开始',
+          items: [
+            { text: '快速开始', link: '/guide/getting-started' },
+            { text: '安装', link: '/guide/installation' },
+            { text: '基础用法', link: '/guide/basic-usage' }
+          ]
+        },
+        {
+          text: '功能',
+          items: [
+            { text: '支持的文件类型', link: '/guide/supported-types' },
+            { text: '自定义渲染器', link: '/guide/custom-renderers' },
+            { text: '主题定制', link: '/guide/theming' }
+          ]
+        }
+      ],
+      '/api/': [
+        {
+          text: 'API 参考',
+          items: [
+            { text: '组件', link: '/api/components' },
+            { text: '类型定义', link: '/api/types' },
+            { text: '工具函数', link: '/api/utils' }
+          ]
+        }
+      ]
+    },
+
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/wh131462/react-file-preview' }
+    ],
+
+    footer: {
+      message: 'Released under the MIT License.',
+      copyright: 'Copyright © 2024-present EternalHeart'
+    },
+
+    search: {
+      provider: 'local'
+    }
+  }
+})
+

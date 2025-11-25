@@ -4,46 +4,6 @@
 
 一个现代化、功能丰富的 React 文件预览组件,支持图片、视频、音频、PDF、Office 文档(Word、Excel、PowerPoint)、Markdown 和代码文件预览。
 
-## 📚 文档
-
-- 📖 [完整文档](https://wh131462.github.io/react-file-preview/docs/)
-- 🎮 [在线演示](https://wh131462.github.io/react-file-preview/)
-
-## 🏗️ Monorepo 结构
-
-本项目使用 pnpm workspaces 组织为 monorepo：
-
-- **packages/react-file-preview** - 核心库（发布到 npm）
-- **packages/example** - 演示应用（部署到 GitHub Pages）
-- **packages/docs** - VitePress 文档站点（部署到 GitHub Pages）
-
-### 开发命令
-
-```bash
-# 安装依赖
-pnpm install
-
-# 开发
-pnpm dev              # 启动示例开发服务器
-pnpm dev:docs         # 启动文档开发服务器
-
-# 构建
-pnpm build            # 构建所有包
-pnpm build:lib        # 仅构建库
-pnpm build:example    # 仅构建示例
-pnpm build:docs       # 仅构建文档
-
-# 预览
-pnpm preview:example  # 预览示例构建
-pnpm preview:docs     # 预览文档构建
-
-# 部署
-pnpm deploy           # 部署示例和文档到 GitHub Pages
-
-# 发布
-pnpm pub              # 发布库到 npm
-```
-
 ## ✨ 特性
 
 - 🎨 **现代化 UI** - Apple 风格的简约设计,毛玻璃效果

@@ -1,8 +1,36 @@
-import { useState, useRef } from 'react';
-import { FilePreviewModal } from './FilePreviewModal';
-import { PreviewFile, PreviewFileInput } from './types';
+import { useState, useRef, useMemo, useEffect } from 'react';
+import { FilePreviewModal } from '@eternalheart/react-file-preview';
+import type { PreviewFile, PreviewFileInput, CustomRenderer } from '@eternalheart/react-file-preview';
+import '@eternalheart/react-file-preview/style.css';
 import { FileText, Image, FileSpreadsheet, Video, Music, Upload, X, Package, BookOpen, Code } from 'lucide-react';
 import packageJson from '../package.json';
+
+// 环境检测：开发环境和生产环境的 URL
+const isDev = import.meta.env.DEV;
+const DOCS_URL = isDev
+  ? 'http://localhost:5173/react-file-preview/docs/'
+  : 'https://wh131462.github.io/react-file-preview/docs/';
+
+// JSON 查看器组件
+function JsonViewer({ url }: { url: string }) {
+  const [content, setContent] = useState<string>('加载中...');
+
+  useEffect(() => {
+    fetch(url)
+      .then(res => res.text())
+      .then(text => {
+        try {
+          const json = JSON.parse(text);
+          setContent(JSON.stringify(json, null, 2));
+        } catch {
+          setContent(text);
+        }
+      })
+      .catch(err => setContent(`加载失败: ${err.message}`));
+  }, [url]);
+
+  return <>{content}</>;
+}
 
 function App() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -139,7 +167,9 @@ function App() {
                 <span className="hidden sm:inline">npm</span>
               </a>
               <a
-                href="#api-docs"
+                href={DOCS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white transition-all hover:scale-105 hover:shadow-lg"
               >
                 <BookOpen className="w-5 h-5" />
@@ -261,179 +291,6 @@ function App() {
         )}
       </div>
 
-      {/* API 文档 */}
-      <div id="api-docs" className="max-w-6xl mx-auto mt-24 mb-12">
-        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-          <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-            <BookOpen className="w-8 h-8" />
-            API 参考文档
-          </h2>
-
-          <div className="space-y-8">
-            {/* Props 表格 */}
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-4">FilePreviewModal Props</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="py-3 px-4 text-gray-300 font-medium">属性</th>
-                      <th className="py-3 px-4 text-gray-300 font-medium">类型</th>
-                      <th className="py-3 px-4 text-gray-300 font-medium">必填</th>
-                      <th className="py-3 px-4 text-gray-300 font-medium">说明</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-gray-400">
-                    <tr className="border-b border-white/5">
-                      <td className="py-3 px-4 font-mono text-blue-400">files</td>
-                      <td className="py-3 px-4 font-mono text-sm">PreviewFileInput[]</td>
-                      <td className="py-3 px-4">✅</td>
-                      <td className="py-3 px-4">文件列表（支持 File 对象、文件对象或 URL 字符串）</td>
-                    </tr>
-                    <tr className="border-b border-white/5">
-                      <td className="py-3 px-4 font-mono text-blue-400">currentIndex</td>
-                      <td className="py-3 px-4 font-mono text-sm">number</td>
-                      <td className="py-3 px-4">✅</td>
-                      <td className="py-3 px-4">当前文件索引</td>
-                    </tr>
-                    <tr className="border-b border-white/5">
-                      <td className="py-3 px-4 font-mono text-blue-400">isOpen</td>
-                      <td className="py-3 px-4 font-mono text-sm">boolean</td>
-                      <td className="py-3 px-4">✅</td>
-                      <td className="py-3 px-4">是否打开预览</td>
-                    </tr>
-                    <tr className="border-b border-white/5">
-                      <td className="py-3 px-4 font-mono text-blue-400">onClose</td>
-                      <td className="py-3 px-4 font-mono text-sm">() =&gt; void</td>
-                      <td className="py-3 px-4">✅</td>
-                      <td className="py-3 px-4">关闭回调</td>
-                    </tr>
-                    <tr>
-                      <td className="py-3 px-4 font-mono text-blue-400">onNavigate</td>
-                      <td className="py-3 px-4 font-mono text-sm">(index: number) =&gt; void</td>
-                      <td className="py-3 px-4">❌</td>
-                      <td className="py-3 px-4">导航回调</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* 类型定义 */}
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-4">支持的文件类型</h3>
-              <div className="bg-black/30 rounded-lg p-4 font-mono text-sm">
-                <pre className="text-gray-300">
-                  {`// 1. 原生 File 对象
-const file: File = ...;
-
-// 2. 文件对象（包含 name, url, type）
-interface PreviewFileLink {
-  id?: string;
-  name: string;      // 文件名
-  type: string;      // MIME 类型
-  url: string;       // 文件 URL
-  size?: number;     // 文件大小（字节）
-}
-
-// 3. HTTP URL 字符串
-const url: string = 'https://example.com/file.pdf';
-
-// files 属性支持以上三种类型的混合数组
-type PreviewFileInput = File | PreviewFileLink | string;`}
-                </pre>
-              </div>
-            </div>
-
-            {/* 使用示例 */}
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-4">使用示例</h3>
-              <div className="bg-black/30 rounded-lg p-4 font-mono text-sm overflow-x-auto">
-                <pre className="text-gray-300">
-                  {`import { FilePreviewModal } from '@eternalheart/react-file-preview';
-import { useState } from 'react';
-
-function App() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
-
-  // 方式 1: 使用原生 File 对象
-  const handleFileSelect = (file: File) => {
-    setFiles([file]); // 直接传入 File 对象
-    setCurrentIndex(0);
-    setIsOpen(true);
-  };
-
-  // 方式 2: 使用 HTTP URL 字符串
-  const files = [
-    'https://example.com/image.jpg',
-    'https://example.com/document.pdf',
-  ];
-
-  // 方式 3: 使用文件对象
-  const files = [
-    {
-      name: 'presentation.pptx',
-      type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      url: '/path/to/presentation.pptx',
-    },
-  ];
-
-  // 方式 4: 混合使用
-  const files = [
-    file1,  // File 对象
-    'https://example.com/image.jpg',  // URL 字符串
-    { name: 'doc.pdf', type: 'application/pdf', url: '/doc.pdf' },  // 文件对象
-  ];
-
-  return (
-    <FilePreviewModal
-      files={files}
-      currentIndex={currentIndex}
-      isOpen={isOpen}
-      onClose={() => setIsOpen(false)}
-      onNavigate={setCurrentIndex}
-    />
-  );
-}`}
-                </pre>
-              </div>
-            </div>
-
-            {/* 支持的格式 */}
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-4">支持的文件格式</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-black/20 rounded-lg p-4">
-                  <h4 className="text-white font-medium mb-2">📷 图片</h4>
-                  <p className="text-gray-400 text-sm">JPG, PNG, GIF, WebP, SVG, BMP, ICO</p>
-                </div>
-                <div className="bg-black/20 rounded-lg p-4">
-                  <h4 className="text-white font-medium mb-2">🎬 视频</h4>
-                  <p className="text-gray-400 text-sm">MP4, WebM, OGG, MOV, AVI, MKV</p>
-                </div>
-                <div className="bg-black/20 rounded-lg p-4">
-                  <h4 className="text-white font-medium mb-2">🎵 音频</h4>
-                  <p className="text-gray-400 text-sm">MP3, WAV, OGG, M4A, AAC, FLAC</p>
-                </div>
-                <div className="bg-black/20 rounded-lg p-4">
-                  <h4 className="text-white font-medium mb-2">📄 文档</h4>
-                  <p className="text-gray-400 text-sm">PDF, DOCX, XLSX, PPTX</p>
-                </div>
-                <div className="bg-black/20 rounded-lg p-4">
-                  <h4 className="text-white font-medium mb-2">📝 Markdown</h4>
-                  <p className="text-gray-400 text-sm">MD, Markdown</p>
-                </div>
-                <div className="bg-black/20 rounded-lg p-4">
-                  <h4 className="text-white font-medium mb-2">💻 代码</h4>
-                  <p className="text-gray-400 text-sm">JS, TS, Python, Java, C++, Go, 等 40+ 种语言</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* 页脚 */}
       <footer className="max-w-6xl mx-auto mt-12 mb-8 text-center">
         <div className="text-gray-400 text-sm">
@@ -485,6 +342,26 @@ function App() {
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
         onNavigate={setCurrentFileIndex}
+        customRenderers={useMemo<CustomRenderer[]>(() => [
+          // 自定义 JSON 渲染器示例
+          {
+            test: (file) => file.name.endsWith('.json'),
+            render: (file) => (
+              <div className="w-full h-full flex items-center justify-center p-8">
+                <div className="bg-gray-900 rounded-lg p-6 max-w-4xl w-full max-h-full overflow-auto">
+                  <div className="flex items-center gap-2 mb-4 text-blue-400">
+                    <Code className="w-5 h-5" />
+                    <h3 className="font-semibold">JSON 文件预览</h3>
+                  </div>
+                  <pre className="text-sm text-gray-300 whitespace-pre-wrap break-words">
+                    {/* 这里会异步加载 JSON 内容 */}
+                    <JsonViewer url={file.url} />
+                  </pre>
+                </div>
+              </div>
+            ),
+          },
+        ], [])}
       />
     </div>
   );

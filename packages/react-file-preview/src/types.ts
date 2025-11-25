@@ -45,3 +45,11 @@ export interface PreviewState {
   totalPages: number;
 }
 
+// 自定义渲染器类型
+export interface CustomRenderer {
+  // 文件类型匹配函数
+  test: (file: PreviewFile) => boolean;
+  // 渲染组件
+  render: (file: PreviewFile) => React.ReactNode;
+}
+

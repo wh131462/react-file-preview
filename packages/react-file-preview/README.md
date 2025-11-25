@@ -4,46 +4,6 @@ English | [简体中文](./README.zh-CN.md)
 
 A modern, feature-rich file preview component for React with support for images, videos, audio, PDFs, Office documents (Word, Excel, PowerPoint), Markdown, and code files.
 
-## 📚 Documentation
-
-- 📖 [Full Documentation](https://wh131462.github.io/react-file-preview/docs/)
-- 🎮 [Live Demo](https://wh131462.github.io/react-file-preview/)
-
-## 🏗️ Monorepo Structure
-
-This project is organized as a monorepo using pnpm workspaces:
-
-- **packages/react-file-preview** - Core library (published to npm)
-- **packages/example** - Demo application (deployed to GitHub Pages)
-- **packages/docs** - VitePress documentation site (deployed to GitHub Pages)
-
-### Development Commands
-
-```bash
-# Install dependencies
-pnpm install
-
-# Development
-pnpm dev              # Start example dev server
-pnpm dev:docs         # Start docs dev server
-
-# Build
-pnpm build            # Build all packages
-pnpm build:lib        # Build library only
-pnpm build:example    # Build example only
-pnpm build:docs       # Build docs only
-
-# Preview
-pnpm preview:example  # Preview example build
-pnpm preview:docs     # Preview docs build
-
-# Deploy
-pnpm deploy           # Deploy example and docs to GitHub Pages
-
-# Publish
-pnpm pub              # Publish library to npm
-```
-
 
 
 ## ✨ Features

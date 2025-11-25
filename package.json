@@ -1,42 +1,24 @@
 {
-  "name": "@eternalheart/react-file-preview",
+  "name": "@eternalheart/react-file-preview-monorepo",
   "version": "1.0.0",
-  "description": "A modern, feature-rich file preview component for React with support for images, videos, audio, PDFs, Office documents (Word, Excel, PowerPoint), Markdown, and code files.",
+  "private": true,
+  "description": "A modern, feature-rich file preview component for React - Monorepo",
   "type": "module",
-  "main": "./lib/index.cjs",
-  "module": "./lib/index.mjs",
-  "types": "./lib/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./lib/index.d.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.cjs"
-    },
-    "./style.css": "./lib/index.css"
+  "packageManager": "pnpm@10.15.0",
+  "scripts": {
+    "dev": "pnpm --filter @eternalheart/react-file-preview-example dev",
+    "dev:docs": "pnpm --filter @eternalheart/react-file-preview-docs dev",
+    "build": "pnpm build:lib && pnpm build:example && pnpm build:docs",
+    "build:lib": "pnpm --filter @eternalheart/react-file-preview build",
+    "build:example": "pnpm --filter @eternalheart/react-file-preview-example build",
+    "build:docs": "pnpm --filter @eternalheart/react-file-preview-docs build",
+    "preview:example": "pnpm --filter @eternalheart/react-file-preview-example preview",
+    "preview:docs": "pnpm --filter @eternalheart/react-file-preview-docs preview",
+    "clean": "pnpm -r exec rm -rf dist lib .vitepress/dist node_modules && rm -rf node_modules dist-deploy",
+    "lint": "eslint packages --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "deploy": "bash scripts/deploy.sh",
+    "pub": "pnpm --filter @eternalheart/react-file-preview pub"
   },
-  "files": [
-    "lib",
-    "README.md",
-    "LICENSE"
-  ],
-  "keywords": [
-    "react",
-    "file-preview",
-    "image-viewer",
-    "pdf-viewer",
-    "video-player",
-    "audio-player",
-    "document-viewer",
-    "office-viewer",
-    "ppt-viewer",
-    "pptx-viewer",
-    "powerpoint-viewer",
-    "word-viewer",
-    "excel-viewer",
-    "markdown-viewer",
-    "code-viewer"
-  ],
-  "homepage": "https://wh131462.github.io/react-file-preview",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wh131462/react-file-preview.git"
@@ -44,70 +26,19 @@
   "bugs": {
     "url": "https://github.com/wh131462/react-file-preview/issues"
   },
+  "homepage": "https://wh131462.github.io/react-file-preview",
   "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
   "author": {
     "name": "EternalHeart",
     "email": "hao131462@qq.com",
     "url": "https://github.com/wh131462"
   },
-  "packageManager": "pnpm@10.15.0",
-  "scripts": {
-    "dev": "pnpm copy-pdf-worker && vite",
-    "build": "pnpm build:demo",
-    "build:demo": "pnpm copy-pdf-worker && tsc && vite build",
-    "build:lib": "vite build --config vite.config.lib.ts && tsc --project tsconfig.lib.json",
-    "preview": "vite preview",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "copy-pdf-worker": "node -e \"require('fs').copyFileSync('node_modules/pdfjs-dist/build/pdf.worker.min.mjs', 'public/pdf.worker.min.mjs')\"",
-    "generate-favicon": "node scripts/generate-favicon.js",
-    "postinstall": "pnpm copy-pdf-worker",
-    "predeploy": "pnpm build:demo",
-    "deploy": "gh-pages -d dist",
-    "prepublishOnly": "pnpm build:lib",
-    "pub": "npm publish --registry https://registry.npmjs.com"
-  },
-  "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
-  },
-  "dependencies": {
-    "@types/react-syntax-highlighter": "^15.5.13",
-    "@videojs-player/react": "^1.0.0",
-    "docx-preview": "^0.3.2",
-    "framer-motion": "^11.11.17",
-    "lucide-react": "^0.460.0",
-    "mammoth": "^1.8.0",
-    "pdfjs-dist": "4.8.69",
-    "pptx-preview": "^1.0.7",
-    "react-markdown": "^10.1.0",
-    "react-pdf": "9.2.1",
-    "react-syntax-highlighter": "^16.1.0",
-    "remark-gfm": "^4.0.1",
-    "video.js": "^8.23.4",
-    "xlsx": "^0.18.5"
-  },
   "devDependencies": {
-    "@types/node": "^24.10.1",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
-    "@vitejs/plugin-react": "^4.3.4",
-    "autoprefixer": "^10.4.20",
-    "cli-real-favicon": "^0.0.9",
     "eslint": "^9.15.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
-    "gh-pages": "^6.3.0",
-    "postcss": "^8.4.49",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "sharp": "^0.34.5",
-    "tailwindcss": "^3.4.15",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.11"
+    "typescript": "^5.6.3"
   }
 }

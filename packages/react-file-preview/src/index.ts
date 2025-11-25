@@ -1,3 +1,6 @@
+// 导入样式
+import './index.css';
+
 // 导出主组件
 export { FilePreviewModal } from './FilePreviewModal';
 
@@ -9,6 +12,7 @@ export type {
   FileType,
   ToolbarAction,
   PreviewState,
+  CustomRenderer,
 } from './types';
 
 // 导出工具函数

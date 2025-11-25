@@ -10,8 +10,11 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+dist-deploy
 lib
 *.local
+.vitepress/cache
+.vitepress/dist
 
 # Editor directories and files
 .vscode/*
@@ -23,4 +26,3 @@ lib
 *.njsproj
 *.sln
 *.sw?
-

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -13,7 +14,7 @@ import {
   Minimize2,
   RefreshCw,
 } from 'lucide-react';
-import { PreviewFile, PreviewFileInput, FileType } from './types';
+import { PreviewFile, PreviewFileInput, FileType, CustomRenderer } from './types';
 import { normalizeFiles } from './utils/fileNormalizer';
 import { ImageRenderer } from './renderers/ImageRenderer';
 import { PdfRenderer } from './renderers/PdfRenderer';
@@ -32,6 +33,7 @@ interface FilePreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate?: (index: number) => void;
+  customRenderers?: CustomRenderer[];
 }
 
 const getFileType = (file: PreviewFile): FileType => {
@@ -83,6 +85,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   isOpen,
   onClose,
   onNavigate,
+  customRenderers = [],
 }) => {
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
@@ -93,6 +96,13 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   const normalizedFiles = useMemo(() => normalizeFiles(files), [files]);
 
   const currentFile = normalizedFiles[currentIndex];
+
+  // 检查是否有自定义渲染器匹配当前文件
+  const customRenderer = useMemo(() => {
+    if (!currentFile) return null;
+    return customRenderers.find(renderer => renderer.test(currentFile));
+  }, [currentFile, customRenderers]);
+
   const fileType = currentFile ? getFileType(currentFile) : 'unsupported';
 
   // 重置状态当文件改变时
@@ -192,14 +202,14 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   const showZoomControls = fileType === 'image' || fileType === 'pdf';
   const showRotateControl = fileType === 'image';
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md overflow-hidden"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md overflow-hidden"
           onClick={onClose}
           onWheel={(e) => e.stopPropagation()}
         >
@@ -306,40 +316,47 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
 
             {/* 内容区域 */}
             <div className="flex-1 flex items-center justify-center pt-24 pb-8 overflow-auto">
-              {fileType === 'image' && (
-                <ImageRenderer
-                  url={currentFile.url}
-                  zoom={zoom}
-                  rotation={rotation}
-                  onZoomChange={handleZoomChange}
-                />
-              )}
-              {fileType === 'pdf' && (
-                <PdfRenderer
-                  url={currentFile.url}
-                  zoom={zoom}
-                  currentPage={currentPage}
-                  onPageChange={setCurrentPage}
-                  onTotalPagesChange={setTotalPages}
-                />
-              )}
-              {fileType === 'docx' && <DocxRenderer url={currentFile.url} />}
-              {fileType === 'xlsx' && <XlsxRenderer url={currentFile.url} />}
-              {fileType === 'pptx' && <PptxRenderer url={currentFile.url} />}
-              {fileType === 'video' && <VideoRenderer url={currentFile.url} />}
-              {fileType === 'audio' && (
-                <AudioRenderer url={currentFile.url} fileName={currentFile.name} />
-              )}
-              {fileType === 'markdown' && <MarkdownRenderer url={currentFile.url} />}
-              {fileType === 'text' && (
-                <TextRenderer url={currentFile.url} fileName={currentFile.name} />
-              )}
-              {fileType === 'unsupported' && (
-                <UnsupportedRenderer
-                  fileName={currentFile.name}
-                  fileType={currentFile.type}
-                  onDownload={handleDownload}
-                />
+              {customRenderer ? (
+                // 使用自定义渲染器
+                customRenderer.render(currentFile)
+              ) : (
+                <>
+                  {fileType === 'image' && (
+                    <ImageRenderer
+                      url={currentFile.url}
+                      zoom={zoom}
+                      rotation={rotation}
+                      onZoomChange={handleZoomChange}
+                    />
+                  )}
+                  {fileType === 'pdf' && (
+                    <PdfRenderer
+                      url={currentFile.url}
+                      zoom={zoom}
+                      currentPage={currentPage}
+                      onPageChange={setCurrentPage}
+                      onTotalPagesChange={setTotalPages}
+                    />
+                  )}
+                  {fileType === 'docx' && <DocxRenderer url={currentFile.url} />}
+                  {fileType === 'xlsx' && <XlsxRenderer url={currentFile.url} />}
+                  {fileType === 'pptx' && <PptxRenderer url={currentFile.url} />}
+                  {fileType === 'video' && <VideoRenderer url={currentFile.url} />}
+                  {fileType === 'audio' && (
+                    <AudioRenderer url={currentFile.url} fileName={currentFile.name} />
+                  )}
+                  {fileType === 'markdown' && <MarkdownRenderer url={currentFile.url} />}
+                  {fileType === 'text' && (
+                    <TextRenderer url={currentFile.url} fileName={currentFile.name} />
+                  )}
+                  {fileType === 'unsupported' && (
+                    <UnsupportedRenderer
+                      fileName={currentFile.name}
+                      fileType={currentFile.type}
+                      onDownload={handleDownload}
+                    />
+                  )}
+                </>
               )}
             </div>
 
@@ -376,6 +393,9 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       )}
     </AnimatePresence>
   );
+
+  // 使用 Portal 将模态框渲染到 document.body
+  return createPortal(modalContent, document.body);
 };
 
 // 工具栏按钮组件

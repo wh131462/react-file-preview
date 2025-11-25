@@ -1,0 +1,96 @@
+{
+  "name": "@eternalheart/react-file-preview",
+  "version": "1.0.0",
+  "description": "A modern, feature-rich file preview component for React with support for images, videos, audio, PDFs, Office documents (Word, Excel, PowerPoint), Markdown, and code files.",
+  "type": "module",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.mjs",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.cjs"
+    },
+    "./style.css": "./lib/index.css"
+  },
+  "files": [
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "react",
+    "file-preview",
+    "image-viewer",
+    "pdf-viewer",
+    "video-player",
+    "audio-player",
+    "document-viewer",
+    "office-viewer",
+    "ppt-viewer",
+    "pptx-viewer",
+    "powerpoint-viewer",
+    "word-viewer",
+    "excel-viewer",
+    "markdown-viewer",
+    "code-viewer"
+  ],
+  "homepage": "https://wh131462.github.io/react-file-preview",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wh131462/react-file-preview.git",
+    "directory": "packages/react-file-preview"
+  },
+  "bugs": {
+    "url": "https://github.com/wh131462/react-file-preview/issues"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "EternalHeart",
+    "email": "hao131462@qq.com",
+    "url": "https://github.com/wh131462"
+  },
+  "scripts": {
+    "build": "vite build && tsc --project tsconfig.json",
+    "dev": "vite build --watch",
+    "prepublishOnly": "pnpm build",
+    "pub": "npm publish --registry https://registry.npmjs.com"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@videojs-player/react": "^1.0.0",
+    "docx-preview": "^0.3.2",
+    "framer-motion": "^11.11.17",
+    "lucide-react": "^0.460.0",
+    "mammoth": "^1.8.0",
+    "pdfjs-dist": "4.8.69",
+    "pptx-preview": "^1.0.7",
+    "react-markdown": "^10.1.0",
+    "react-pdf": "9.2.1",
+    "react-syntax-highlighter": "^16.1.0",
+    "remark-gfm": "^4.0.1",
+    "video.js": "^8.23.4",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.18",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}
