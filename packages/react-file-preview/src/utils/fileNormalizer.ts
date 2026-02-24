@@ -58,6 +58,7 @@ function inferMimeType(fileName: string): string {
     xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     ppt: 'application/vnd.ms-powerpoint',
+    msg: 'application/vnd.ms-outlook',
     
     // 文本
     txt: 'text/plain',

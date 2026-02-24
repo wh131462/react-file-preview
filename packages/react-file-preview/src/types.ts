@@ -25,6 +25,7 @@ export type FileType =
   | 'docx'
   | 'xlsx'
   | 'pptx'
+  | 'msg'
   | 'video'
   | 'audio'
   | 'markdown'
