@@ -1,3 +1,5 @@
+@import 'x-data-spreadsheet/dist/xspreadsheet.css';
+
 @tailwind components;
 @tailwind utilities;
 
@@ -257,4 +259,54 @@
 
 .rfp-root .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* x-data-spreadsheet 样式覆盖 */
+.rfp-root .xlsx-spreadsheet-container .x-spreadsheet {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.rfp-root .xlsx-spreadsheet-container .x-spreadsheet-sheet {
+  overflow: auto;
+}
+
+/* 隐藏底部栏的添加 Sheet 按钮（添加按钮是 li:first-child 的直接子 .x-spreadsheet-icon，更多按钮在 span 内不受影响） */
+.rfp-root .xlsx-spreadsheet-container .x-spreadsheet-bottombar .x-spreadsheet-menu > li:first-child > .x-spreadsheet-icon {
+  display: none;
+}
+
+/* 禁止双击重命名 Sheet、右键菜单 */
+.rfp-root .xlsx-spreadsheet-container .x-spreadsheet-bottombar .x-spreadsheet-menu > li {
+  pointer-events: auto;
+}
+
+/* 底部栏 "更多" 下拉移到最右侧 */
+.rfp-root .xlsx-spreadsheet-container .x-spreadsheet-bottombar .x-spreadsheet-menu {
+  display: flex;
+  width: 100%;
+}
+
+.rfp-root .xlsx-spreadsheet-container .x-spreadsheet-bottombar .x-spreadsheet-menu > li:first-child {
+  order: 999;
+  margin-left: auto;
+}
+
+/* 去掉底部栏的 padding */
+.rfp-root .xlsx-spreadsheet-container .x-spreadsheet-bottombar {
+  padding: 0 8px;
+  overflow: visible;
+}
+
+/* "更多" 下拉弹窗改为向左展开，防止溢出容器 */
+.rfp-root .xlsx-spreadsheet-container .x-spreadsheet-bottombar .x-spreadsheet-dropdown.top-left .x-spreadsheet-dropdown-content {
+  left: auto;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+/* 隐藏底部栏的右键菜单（删除 Sheet） */
+.rfp-root .xlsx-spreadsheet-container .x-spreadsheet-bottombar .x-spreadsheet-contextmenu {
+  display: none !important;
 }

@@ -399,7 +399,9 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 ref={contentRef}
                 className={`rfp-flex-1 rfp-flex rfp-items-center rfp-justify-center rfp-overflow-auto ${fileType === 'image'
                   ? 'rfp-p-0'
-                  : 'rfp-pt-32 md:rfp-pt-24 rfp-pb-4 md:rfp-pb-8'
+                  : fileType === 'xlsx'
+                    ? 'rfp-pt-32 md:rfp-pt-24'
+                    : 'rfp-pt-32 md:rfp-pt-24 rfp-pb-4 md:rfp-pb-8'
                   }`}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
