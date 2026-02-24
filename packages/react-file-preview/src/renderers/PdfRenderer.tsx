@@ -12,6 +12,7 @@ interface PdfRendererProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   onTotalPagesChange: (total: number) => void;
+  onPageWidthChange?: (width: number) => void;
 }
 
 export const PdfRenderer: React.FC<PdfRendererProps> = ({
@@ -20,6 +21,7 @@ export const PdfRenderer: React.FC<PdfRendererProps> = ({
   currentPage,
   onPageChange,
   onTotalPagesChange,
+  onPageWidthChange,
 }) => {
   const [numPages, setNumPages] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
@@ -131,6 +133,12 @@ export const PdfRenderer: React.FC<PdfRendererProps> = ({
                     renderTextLayer={true}
                     renderAnnotationLayer={true}
                     className="rfp-shadow-2xl"
+                    onRenderSuccess={(page) => {
+                      if (pageNumber === 1 && onPageWidthChange) {
+                        // 上报 scale=1 时的原始页面宽度
+                        onPageWidthChange(page.originalWidth || page.width / zoom);
+                      }
+                    }}
                   />
                   {/* 页码标签 */}
                   <div className="rfp-absolute rfp-top-2 rfp-right-2 rfp-bg-black/60 rfp-backdrop-blur-sm rfp-text-white rfp-text-xs rfp-px-3 rfp-py-1 rfp-rounded-full">

@@ -6,13 +6,17 @@ interface ImageRendererProps {
   zoom: number;
   rotation: number;
   onZoomChange?: (zoom: number) => void;
+  onNaturalWidthChange?: (width: number) => void;
+  onNaturalHeightChange?: (height: number) => void;
 }
 
 export const ImageRenderer: React.FC<ImageRendererProps> = ({
   url,
   zoom,
   rotation,
-  onZoomChange
+  onZoomChange,
+  onNaturalWidthChange,
+  onNaturalHeightChange
 }) => {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +24,7 @@ export const ImageRenderer: React.FC<ImageRendererProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [internalZoom, setInternalZoom] = useState(1); // 内部缩放状态
+  const imgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,8 +44,11 @@ export const ImageRenderer: React.FC<ImageRendererProps> = ({
     setPosition({ x: 0, y: 0 });
   }, [zoom, rotation]);
 
-  const handleLoad = () => {
+  const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     setLoaded(true);
+    const img = e.currentTarget;
+    onNaturalWidthChange?.(img.naturalWidth);
+    onNaturalHeightChange?.(img.naturalHeight);
   };
 
   const handleError = () => {
@@ -57,7 +65,7 @@ export const ImageRenderer: React.FC<ImageRendererProps> = ({
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    const delta = e.deltaY > 0 ? -0.05 : 0.05;
     setInternalZoom(prev => {
       const newZoom = Math.max(0.01, Math.min(10, prev + delta)); // 限制缩放范围 0.01-10
       // 同步缩放比例到父组件
@@ -113,6 +121,7 @@ export const ImageRenderer: React.FC<ImageRendererProps> = ({
       )}
 
       <motion.img
+        ref={imgRef}
         src={url}
         alt="Preview"
         className={`rfp-max-w-none rfp-select-none ${!loaded ? 'rfp-hidden' : ''}`}
