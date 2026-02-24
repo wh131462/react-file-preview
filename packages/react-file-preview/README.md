@@ -373,6 +373,18 @@ The component is built with Tailwind CSS. You can customize styles by overriding
 
 - [Online Demo](https://wh131462.github.io/react-file-preview) - Live demo
 
+## 🤖 Context7 Support
+
+This project supports [Context7](https://context7.com) MCP Server. If you are using AI coding assistants (such as Claude Code, Cursor, etc.), you can configure the Context7 MCP Server to get the latest documentation and code examples for `@eternalheart/react-file-preview`, enabling a better AI-assisted development experience.
+
+### How to Use
+
+1. Add the Context7 MCP Server to your AI tool configuration
+2. When interacting with AI, Context7 will automatically provide up-to-date API docs and usage examples for this library
+3. Get more accurate code suggestions and answers without manually looking up documentation
+
+> For more details on configuring Context7, please visit [Context7 official documentation](https://github.com/upstash/context7).
+
 ## 📦 Package Information
 
 ### Bundle Size

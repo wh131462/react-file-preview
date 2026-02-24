@@ -371,6 +371,18 @@ const files = [
 
 - [在线演示](https://wh131462.github.io/react-file-preview) - 在线 Demo
 
+## 🤖 Context7 支持
+
+本项目支持 [Context7](https://context7.com) MCP Server。如果你正在使用 AI 编程助手（如 Claude Code、Cursor 等），可以配置 Context7 MCP Server 来获取 `@eternalheart/react-file-preview` 的最新文档和代码示例，从而获得更好的 AI 辅助开发体验。
+
+### 如何使用
+
+1. 将 Context7 MCP Server 添加到你的 AI 工具配置中
+2. 在与 AI 交互时，Context7 会自动提供本库的最新 API 文档和使用示例
+3. 无需手动查阅文档，即可获得更精准的代码建议和解答
+
+> 更多关于 Context7 的配置方式，请访问 [Context7 官方文档](https://github.com/upstash/context7)。
+
 ## 📦 包信息
 
 ### 打包体积
