@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import MsgReader from '@kenjiuno/msgreader';
 import type { FieldsData } from '@kenjiuno/msgreader';
-import { User, Users, Paperclip, Calendar } from 'lucide-react';
+import { User, Users, Paperclip, Calendar, Mail, Tag, Clock, Hash } from 'lucide-react';
 
 interface MsgRendererProps {
   url: string;
@@ -50,12 +50,60 @@ function decodeHtmlBody(fields: FieldsData): string {
   }
   // 最后使用纯文本，转换为简单 HTML
   if (fields.body) {
-    return `<pre style="white-space: pre-wrap; word-wrap: break-word; font-family: system-ui, sans-serif;">${
-      fields.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    }</pre>`;
+    return `<pre style="white-space: pre-wrap; word-wrap: break-word; font-family: system-ui, sans-serif;">${fields.body.replace(/&/g, '&amp;').replace(/\x3c/g, '&lt;').replace(/>/g, '&gt;')
+      }</pre>`;
   }
   return '<p style="color: #999;">（无邮件正文）</p>';
 }
+
+function formatMessageClass(messageClass: string | undefined): string {
+  if (!messageClass) return '';
+  const classMap: Record<string, string> = {
+    'IPM.Note': 'Email',
+    'IPM.Note.SMIME': 'Encrypted Email',
+    'IPM.Note.SMIME.MultipartSigned': 'Signed Email',
+    'IPM.Appointment': 'Appointment',
+    'IPM.Schedule.Meeting.Request': 'Meeting Request',
+    'IPM.Schedule.Meeting.Canceled': 'Meeting Cancellation',
+    'IPM.Contact': 'Contact',
+    'IPM.Task': 'Task',
+    'IPM.StickyNote': 'Sticky Note',
+  };
+  return classMap[messageClass] || messageClass;
+}
+
+const labelStyle: React.CSSProperties = {
+  flexShrink: 0,
+  color: '#6b7280',
+  fontWeight: 500,
+  marginRight: '8px',
+  whiteSpace: 'nowrap',
+};
+
+const rowStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: '8px',
+  padding: '6px 0',
+};
+
+const iconWrapStyle: React.CSSProperties = {
+  flexShrink: 0,
+  display: 'flex',
+  alignItems: 'center',
+  height: '1.4em',
+};
+
+const iconStyle: React.CSSProperties = {
+  flexShrink: 0,
+  color: '#9ca3af',
+};
+
+const valueStyle: React.CSSProperties = {
+  color: '#111827',
+  wordBreak: 'break-word' as const,
+  flex: 1,
+};
 
 export const MsgRenderer: React.FC<MsgRendererProps> = ({ url }) => {
   const [loading, setLoading] = useState(true);
@@ -115,81 +163,216 @@ export const MsgRenderer: React.FC<MsgRendererProps> = ({ url }) => {
   const sender = senderName && senderEmail && senderName !== senderEmail
     ? `${senderName} <${senderEmail}>`
     : senderName || senderEmail;
-  const date = formatDate(fields.clientSubmitTime || fields.messageDeliveryTime || fields.creationTime);
+  const sentDate = formatDate(fields.clientSubmitTime);
+  const receivedDate = formatDate(fields.messageDeliveryTime);
+  const createdDate = formatDate(fields.creationTime);
+  const lastModified = formatDate(fields.lastModificationTime);
   const subject = fields.subject || '（无主题）';
   const attachments = (fields.attachments || []).filter((a) => !a.attachmentHidden);
   const bodyHtml = decodeHtmlBody(fields);
+  const messageClass = formatMessageClass(fields.messageClass);
+  const messageId = fields.messageId || '';
+  const fieldsAny = fields as FieldsData & Record<string, unknown>;
+  const importance = typeof fieldsAny.importance === 'number' ? fieldsAny.importance : undefined;
+  const importanceLabel = importance === 2 ? 'High' : importance === 0 ? 'Low' : '';
+  const sensitivity = typeof fieldsAny.sensitivity === 'number' ? fieldsAny.sensitivity : undefined;
+  const sensitivityLabels: Record<number, string> = {
+    0: 'Normal',
+    1: 'Personal',
+    2: 'Private',
+    3: 'Confidential',
+  };
+  const sensitivityLabel = sensitivity !== undefined && sensitivity !== 0 ? sensitivityLabels[sensitivity] || '' : '';
 
   return (
-    <div className="rfp-w-full rfp-h-full rfp-overflow-auto rfp-p-4 md:rfp-p-8">
-      <div className="rfp-max-w-full md:rfp-max-w-4xl rfp-mx-auto rfp-bg-white rfp-rounded-lg rfp-shadow-2xl rfp-overflow-hidden">
+    <div
+      className="rfp-w-full rfp-h-full rfp-overflow-auto"
+      style={{ background: 'rgba(0, 0, 0, 0.15)' }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '900px',
+          margin: '0 auto',
+          background: 'white',
+          minHeight: '100%',
+          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.15)',
+        }}
+      >
         {/* 邮件头部 */}
-        <div style={{ borderBottom: '1px solid #e5e7eb', padding: '24px', background: '#f9fafb' }}>
+        <div style={{ borderBottom: '1px solid #e5e7eb', padding: 'clamp(12px, 3vw, 24px) clamp(16px, 3vw, 28px)', background: '#f9fafb' }}>
           {/* 主题 */}
-          <h2 style={{ margin: '0 0 16px 0', fontSize: '20px', fontWeight: 600, color: '#111827' }}>
+          <h2 style={{ margin: '0 0 16px 0', fontSize: 'clamp(16px, 2.5vw, 20px)', fontWeight: 600, color: '#111827', lineHeight: 1.4 }}>
             {subject}
           </h2>
 
           {/* 元信息 */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px', color: '#4b5563' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', fontSize: 'clamp(12px, 1.8vw, 14px)', color: '#4b5563' }}>
             {sender && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <User size={16} style={{ marginTop: '2px', flexShrink: 0, color: '#9ca3af' }} />
-                <div>
-                  <span style={{ color: '#6b7280', marginRight: '8px' }}>发件人:</span>
-                  <span style={{ color: '#111827' }}>{sender}</span>
+              <div style={rowStyle}>
+                <span style={iconWrapStyle}><User size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>From</span>
+                  <span style={valueStyle}>{sender}</span>
                 </div>
               </div>
             )}
 
             {toStr && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <Users size={16} style={{ marginTop: '2px', flexShrink: 0, color: '#9ca3af' }} />
-                <div>
-                  <span style={{ color: '#6b7280', marginRight: '8px' }}>收件人:</span>
-                  <span style={{ color: '#111827' }}>{toStr}</span>
+              <div style={rowStyle}>
+                <span style={iconWrapStyle}><Users size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>To</span>
+                  <span style={valueStyle}>{toStr}</span>
                 </div>
               </div>
             )}
 
             {ccStr && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <Users size={16} style={{ marginTop: '2px', flexShrink: 0, color: '#9ca3af' }} />
-                <div>
-                  <span style={{ color: '#6b7280', marginRight: '8px' }}>抄送:</span>
-                  <span style={{ color: '#111827' }}>{ccStr}</span>
+              <div style={rowStyle}>
+                <span style={iconWrapStyle}><Users size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>Cc</span>
+                  <span style={valueStyle}>{ccStr}</span>
                 </div>
               </div>
             )}
 
             {bccStr && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <Users size={16} style={{ marginTop: '2px', flexShrink: 0, color: '#9ca3af' }} />
-                <div>
-                  <span style={{ color: '#6b7280', marginRight: '8px' }}>密送:</span>
-                  <span style={{ color: '#111827' }}>{bccStr}</span>
+              <div style={rowStyle}>
+                <span style={iconWrapStyle}><Users size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>Bcc</span>
+                  <span style={valueStyle}>{bccStr}</span>
                 </div>
               </div>
             )}
 
-            {date && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <Calendar size={16} style={{ marginTop: '2px', flexShrink: 0, color: '#9ca3af' }} />
-                <div>
-                  <span style={{ color: '#6b7280', marginRight: '8px' }}>日期:</span>
-                  <span style={{ color: '#111827' }}>{date}</span>
+            {sentDate && (
+              <div style={rowStyle}>
+                <span style={iconWrapStyle}><Calendar size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>Sent</span>
+                  <span style={valueStyle}>{sentDate}</span>
+                </div>
+              </div>
+            )}
+
+            {receivedDate && receivedDate !== sentDate && (
+              <div style={rowStyle}>
+                <span style={iconWrapStyle}><Clock size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>Received</span>
+                  <span style={valueStyle}>{receivedDate}</span>
+                </div>
+              </div>
+            )}
+
+            {!sentDate && !receivedDate && createdDate && (
+              <div style={rowStyle}>
+                <span style={iconWrapStyle}><Calendar size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>Date</span>
+                  <span style={valueStyle}>{createdDate}</span>
+                </div>
+              </div>
+            )}
+
+            {importanceLabel && (
+              <div style={rowStyle}>
+                <span style={iconWrapStyle}><Tag size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>Importance</span>
+                  <span style={{
+                    ...valueStyle,
+                    color: importance === 2 ? '#dc2626' : '#2563eb',
+                    fontWeight: 500,
+                  }}>
+                    {importanceLabel}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {sensitivityLabel && (
+              <div style={rowStyle}>
+                <span style={iconWrapStyle}><Tag size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>Sensitivity</span>
+                  <span style={valueStyle}>{sensitivityLabel}</span>
+                </div>
+              </div>
+            )}
+
+            {messageClass && messageClass !== 'Email' && (
+              <div style={rowStyle}>
+                <span style={iconWrapStyle}><Mail size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>Type</span>
+                  <span style={valueStyle}>{messageClass}</span>
                 </div>
               </div>
             )}
 
             {attachments.length > 0 && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <Paperclip size={16} style={{ marginTop: '2px', flexShrink: 0, color: '#9ca3af' }} />
-                <div>
-                  <span style={{ color: '#6b7280', marginRight: '8px' }}>附件:</span>
-                  <span style={{ color: '#111827' }}>
-                    {attachments.map((a) => a.fileName || a.name || '未知文件').join(', ')}
-                  </span>
+              <div style={{ ...rowStyle, borderTop: '1px solid #e5e7eb', marginTop: '4px', paddingTop: '10px' }}>
+                <span style={iconWrapStyle}><Paperclip size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>Attachments</span>
+                  <div style={{ ...valueStyle, display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {attachments.map((a, i) => {
+                      const name = a.fileName || a.name || '未知文件';
+                      const size = a.contentLength;
+                      const sizeStr = size
+                        ? size > 1048576
+                          ? `${(size / 1048576).toFixed(1)} MB`
+                          : size > 1024
+                            ? `${(size / 1024).toFixed(0)} KB`
+                            : `${size} B`
+                        : '';
+                      return (
+                        <span
+                          key={i}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            padding: '2px 8px',
+                            background: '#f3f4f6',
+                            borderRadius: '4px',
+                            fontSize: '13px',
+                            color: '#374151',
+                            border: '1px solid #e5e7eb',
+                          }}
+                        >
+                          {name}
+                          {sizeStr && (
+                            <span style={{ color: '#9ca3af', fontSize: '12px' }}>({sizeStr})</span>
+                          )}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {messageId && (
+              <div style={{ ...rowStyle, borderTop: attachments.length > 0 ? 'none' : '1px solid #e5e7eb', marginTop: '4px', paddingTop: '10px' }}>
+                <span style={iconWrapStyle}><Hash size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>Message-ID</span>
+                  <span style={{ ...valueStyle, fontSize: '12px', color: '#9ca3af', fontFamily: 'monospace' }}>{messageId}</span>
+                </div>
+              </div>
+            )}
+
+            {lastModified && lastModified !== sentDate && lastModified !== receivedDate && (
+              <div style={rowStyle}>
+                <span style={iconWrapStyle}><Clock size={16} style={iconStyle} /></span>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <span style={labelStyle}>Modified</span>
+                  <span style={{ ...valueStyle, fontSize: '12px', color: '#9ca3af' }}>{lastModified}</span>
                 </div>
               </div>
             )}
@@ -199,10 +382,11 @@ export const MsgRenderer: React.FC<MsgRendererProps> = ({ url }) => {
         {/* 邮件正文 */}
         <div
           style={{
-            padding: '24px',
+            padding: 'clamp(12px, 3vw, 24px) clamp(16px, 3vw, 28px)',
             fontFamily: 'system-ui, -apple-system, sans-serif',
             lineHeight: '1.6',
             color: '#333',
+            overflowX: 'auto',
           }}
           dangerouslySetInnerHTML={{ __html: bodyHtml }}
         />
