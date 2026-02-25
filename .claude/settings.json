@@ -6,7 +6,10 @@
       "Bash(ls /Users/eternalheart/workspace/wh131462/react-file-preview/packages/example/public/icon*)",
       "Bash(ls /Users/eternalheart/workspace/wh131462/react-file-preview/node_modules/.pnpm/x-data-spreadsheet*/node_modules/x-data-spreadsheet/)",
       "Bash(cat /Users/eternalheart/workspace/wh131462/react-file-preview/node_modules/.pnpm/x-data-spreadsheet*/node_modules/x-data-spreadsheet/package.json)",
-      "Bash(export PATH=\"$HOME/.local/share/pnpm:$HOME/.npm-global/bin:$HOME/.nvm/versions/node/*/bin:/usr/local/bin:/opt/homebrew/bin:$PATH\")"
+      "Bash(export PATH=\"$HOME/.local/share/pnpm:$HOME/.npm-global/bin:$HOME/.nvm/versions/node/*/bin:/usr/local/bin:/opt/homebrew/bin:$PATH\")",
+      "Bash(export PATH=\"$HOME/.nvm/versions/node/v22.18.0/bin:$PATH\")",
+      "Bash(npx pnpm build)",
+      "Bash(export PATH=\"$HOME/.local/share/pnpm:$HOME/.nvm/versions/node/*/bin:/opt/homebrew/bin:/usr/local/bin:$PATH\")"
     ]
   }
 }

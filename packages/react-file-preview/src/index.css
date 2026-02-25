@@ -116,6 +116,12 @@
   scroll-behavior: smooth;
 }
 
+/* 唱片旋转动画 */
+@keyframes rfp-vinyl-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* 音频播放器进度条样式 */
 .rfp-root .audio-slider {
   -webkit-appearance: none;
@@ -129,16 +135,21 @@
   position: relative;
 }
 
+.rfp-root .audio-slider:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
 .rfp-root .audio-slider::-webkit-slider-runnable-track {
   width: 100%;
-  height: 6px;
+  height: 5px;
   border-radius: 3px;
   background: transparent;
 }
 
 .rfp-root .audio-slider::-moz-range-track {
   width: 100%;
-  height: 6px;
+  height: 5px;
   border-radius: 3px;
   background: transparent;
 }
@@ -146,35 +157,35 @@
 .rfp-root .audio-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgb(168, 85, 247), rgb(236, 72, 153));
+  background: linear-gradient(135deg, #818cf8, #6366f1);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.5);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.5);
   transition: all 0.2s ease;
   margin-top: -5px;
 }
 
 .rfp-root .audio-slider::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgb(168, 85, 247), rgb(236, 72, 153));
+  background: linear-gradient(135deg, #818cf8, #6366f1);
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.5);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.5);
   transition: all 0.2s ease;
 }
 
 .rfp-root .audio-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.7);
+  transform: scale(1.25);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.7);
 }
 
 .rfp-root .audio-slider::-moz-range-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.7);
+  transform: scale(1.25);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.7);
 }
 
 .rfp-root .audio-slider::-webkit-slider-thumb:active {
@@ -199,14 +210,14 @@
 
 .rfp-root .volume-slider::-webkit-slider-runnable-track {
   width: 100%;
-  height: 4px;
+  height: 3px;
   border-radius: 2px;
   background: transparent;
 }
 
 .rfp-root .volume-slider::-moz-range-track {
   width: 100%;
-  height: 4px;
+  height: 3px;
   border-radius: 2px;
   background: transparent;
 }
@@ -217,32 +228,89 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: rgb(168, 85, 247);
+  background: #818cf8;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
   transition: all 0.2s ease;
-  margin-top: -4px;
+  margin-top: -5px;
 }
 
 .rfp-root .volume-slider::-moz-range-thumb {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: rgb(168, 85, 247);
+  background: #818cf8;
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 6px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
   transition: all 0.2s ease;
 }
 
 .rfp-root .volume-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 3px 8px rgba(168, 85, 247, 0.6);
+  transform: scale(1.25);
+  box-shadow: 0 3px 8px rgba(99, 102, 241, 0.6);
 }
 
 .rfp-root .volume-slider::-moz-range-thumb:hover {
+  transform: scale(1.25);
+  box-shadow: 0 3px 8px rgba(99, 102, 241, 0.6);
+}
+
+/* 垂直音量滑块样式 */
+.rfp-root .volume-slider-vertical {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+}
+
+.rfp-root .volume-slider-vertical::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: transparent;
+}
+
+.rfp-root .volume-slider-vertical::-moz-range-track {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: transparent;
+}
+
+.rfp-root .volume-slider-vertical::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #818cf8;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.5);
+  transition: all 0.15s ease;
+  margin-top: -6px;
+}
+
+.rfp-root .volume-slider-vertical::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #818cf8;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.5);
+  transition: all 0.15s ease;
+}
+
+.rfp-root .volume-slider-vertical::-webkit-slider-thumb:hover {
   transform: scale(1.2);
-  box-shadow: 0 3px 8px rgba(168, 85, 247, 0.6);
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.7);
+}
+
+.rfp-root .volume-slider-vertical::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.7);
 }
 
 .rfp-root .pptx-preview-wrapper {
