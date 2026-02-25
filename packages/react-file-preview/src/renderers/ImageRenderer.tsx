@@ -5,6 +5,8 @@ interface ImageRendererProps {
   url: string;
   zoom: number;
   rotation: number;
+  resetKey?: number;
+  fileSize?: number;
   onZoomChange?: (zoom: number) => void;
   onNaturalWidthChange?: (width: number) => void;
   onNaturalHeightChange?: (height: number) => void;
@@ -14,6 +16,8 @@ export const ImageRenderer: React.FC<ImageRendererProps> = ({
   url,
   zoom,
   rotation,
+  resetKey,
+  fileSize,
   onZoomChange,
   onNaturalWidthChange,
   onNaturalHeightChange
@@ -23,7 +27,8 @@ export const ImageRenderer: React.FC<ImageRendererProps> = ({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [internalZoom, setInternalZoom] = useState(1); // 内部缩放状态
+  const [internalZoom, setInternalZoom] = useState(1);
+  const [naturalSize, setNaturalSize] = useState({ width: 0, height: 0 });
   const imgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -39,45 +44,84 @@ export const ImageRenderer: React.FC<ImageRendererProps> = ({
     setInternalZoom(zoom);
   }, [zoom]);
 
-  // 重置位置当缩放或旋转改变时
+  // 适应窗口/原始尺寸等操作时重置位置居中
   useEffect(() => {
-    setPosition({ x: 0, y: 0 });
-  }, [zoom, rotation]);
+    if (resetKey !== undefined) {
+      setPosition({ x: 0, y: 0 });
+    }
+  }, [resetKey]);
 
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     setLoaded(true);
     const img = e.currentTarget;
+    setNaturalSize({ width: img.naturalWidth, height: img.naturalHeight });
     onNaturalWidthChange?.(img.naturalWidth);
     onNaturalHeightChange?.(img.naturalHeight);
   };
+
+  // 边界限制：确保图片至少有一部分可见
+  const clampPosition = useCallback((pos: { x: number; y: number }, currentZoom: number) => {
+    const container = containerRef.current;
+    if (!container || naturalSize.width === 0) return pos;
+
+    const containerW = container.clientWidth;
+    const containerH = container.clientHeight;
+    const imgW = naturalSize.width * currentZoom;
+    const imgH = naturalSize.height * currentZoom;
+
+    // 至少保留 margin px 的图片在视口内
+    const margin = Math.min(80, containerW * 0.15, containerH * 0.15);
+    const rangeX = (containerW + imgW) / 2 - margin;
+    const rangeY = (containerH + imgH) / 2 - margin;
+
+    return {
+      x: rangeX > 0 ? Math.max(-rangeX, Math.min(rangeX, pos.x)) : 0,
+      y: rangeY > 0 ? Math.max(-rangeY, Math.min(rangeY, pos.y)) : 0,
+    };
+  }, [naturalSize]);
 
   const handleError = () => {
     setError('图片加载失败');
     setLoaded(true);
   };
 
+  // 双击复原：居中 + 缩放100%
   const handleDoubleClick = () => {
-    // 双击重置位置
     setPosition({ x: 0, y: 0 });
+    setInternalZoom(1);
+    onZoomChange?.(1);
   };
 
-  // 鼠标滚轮缩放
+  // 鼠标滚轮缩放 —— 以鼠标位置为缩放原点
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left - rect.width / 2;
+    const mouseY = e.clientY - rect.top - rect.height / 2;
+
     const delta = e.deltaY > 0 ? -0.05 : 0.05;
+
     setInternalZoom(prev => {
-      const newZoom = Math.max(0.01, Math.min(10, prev + delta)); // 限制缩放范围 0.01-10
-      // 同步缩放比例到父组件
-      if (onZoomChange) {
-        onZoomChange(newZoom);
-      }
+      const newZoom = Math.max(0.01, Math.min(10, prev + delta));
+      const scale = newZoom / prev;
+
+      setPosition(pos => clampPosition({
+        x: mouseX - scale * (mouseX - pos.x),
+        y: mouseY - scale * (mouseY - pos.y),
+      }, newZoom));
+
+      onZoomChange?.(newZoom);
       return newZoom;
     });
-  }, [onZoomChange]);
+  }, [onZoomChange, clampPosition]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (e.button !== 0) return; // 只响应左键
+    if (e.button !== 0) return;
     setIsDragging(true);
     setDragStart({
       x: e.clientX - position.x,
@@ -87,11 +131,11 @@ export const ImageRenderer: React.FC<ImageRendererProps> = ({
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging) return;
-    setPosition({
+    setPosition(clampPosition({
       x: e.clientX - dragStart.x,
       y: e.clientY - dragStart.y,
-    });
-  }, [isDragging, dragStart]);
+    }, internalZoom));
+  }, [isDragging, dragStart, internalZoom, clampPosition]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -100,7 +144,7 @@ export const ImageRenderer: React.FC<ImageRendererProps> = ({
   return (
     <div
       ref={containerRef}
-      className="rfp-flex rfp-items-center rfp-justify-center rfp-w-full rfp-h-full rfp-overflow-hidden"
+      className="rfp-relative rfp-flex rfp-items-center rfp-justify-center rfp-w-full rfp-h-full rfp-overflow-hidden"
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -138,6 +182,13 @@ export const ImageRenderer: React.FC<ImageRendererProps> = ({
         transition={{ duration: 0.3 }}
         draggable={false}
       />
+
+      {/* 右下角分辨率 */}
+      {loaded && !error && naturalSize.width > 0 && (
+        <div className="rfp-absolute rfp-bottom-2 rfp-right-3 rfp-text-[10px] rfp-text-white/30 hover:rfp-text-white/80 rfp-transition-colors rfp-pointer-events-auto rfp-select-none rfp-cursor-default">
+          {naturalSize.width} × {naturalSize.height}{fileSize != null && ` · ${fileSize < 1024 ? `${fileSize} B` : fileSize < 1024 * 1024 ? `${(fileSize / 1024).toFixed(1)} KB` : `${(fileSize / (1024 * 1024)).toFixed(1)} MB`}`}
+        </div>
+      )}
     </div>
   );
 };

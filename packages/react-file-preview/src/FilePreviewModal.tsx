@@ -113,6 +113,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   const [, setTotalPages] = useState(1); // PDF 总页数,由 PdfRenderer 更新
   const [contentNaturalWidth, setContentNaturalWidth] = useState(0); // 内容原始宽度
   const [contentNaturalHeight, setContentNaturalHeight] = useState(0); // 内容原始高度
+  const [imageResetKey, setImageResetKey] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // 导航箭头自动隐藏
@@ -160,6 +161,18 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       clearTimeout(navHideTimerRef.current);
     }
   }, [currentIndex]);
+
+  // 图片加载后默认适应窗口
+  useEffect(() => {
+    if (fileType === 'image' && contentNaturalWidth > 0 && contentNaturalHeight > 0 && contentRef.current) {
+      const containerWidth = contentRef.current.clientWidth;
+      const containerHeight = contentRef.current.clientHeight;
+      const scaleX = containerWidth / contentNaturalWidth;
+      const scaleY = containerHeight / contentNaturalHeight;
+      const newZoom = Math.min(scaleX, scaleY);
+      setZoom(Math.max(0.01, Math.min(10, newZoom)));
+    }
+  }, [fileType, contentNaturalWidth, contentNaturalHeight]);
 
   // 导航箭头自动隐藏计时器启动 & 清理
   useEffect(() => {
@@ -243,10 +256,13 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       setZoom(1);
     }
     setRotation(0);
+    setImageResetKey(k => k + 1);
   }, [contentNaturalWidth, contentNaturalHeight]);
 
   const handleOriginalSize = useCallback(() => {
     setZoom(1);
+    setRotation(0);
+    setImageResetKey(k => k + 1);
   }, []);
 
   const handleZoomChange = useCallback((newZoom: number) => {
@@ -256,6 +272,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   const handleReset = useCallback(() => {
     setZoom(1);
     setRotation(0);
+    setImageResetKey(k => k + 1);
   }, []);
 
   const handleDownload = useCallback(() => {
@@ -480,6 +497,8 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                         url={currentFile.url}
                         zoom={zoom}
                         rotation={rotation}
+                        resetKey={imageResetKey}
+                        fileSize={currentFile.size}
                         onZoomChange={handleZoomChange}
                         onNaturalWidthChange={setContentNaturalWidth}
                         onNaturalHeightChange={setContentNaturalHeight}
@@ -575,7 +594,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ icon, label, onClick, dis
       onClick={onClick}
       disabled={disabled}
       title={label}
-      className={`rfp-p-2 md:rfp-p-1.5 rfp-rounded-md rfp-transition-all ${disabled
+      className={`rfp-p-2 md:rfp-p-1.5 rfp-rounded-md rfp-transition-all rfp-select-none ${disabled
         ? 'rfp-text-white/30 rfp-cursor-not-allowed'
         : 'rfp-text-white hover:rfp-bg-white/10 active:rfp-bg-white/20'
         }`}

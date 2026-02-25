@@ -3,7 +3,7 @@ import { PreviewFile, PreviewFileInput } from '../types';
 /**
  * 从 URL 字符串中提取文件名
  */
-function getFileNameFromUrl(url: string): string {
+export function getFileNameFromUrl(url: string): string {
   try {
     const urlObj = new URL(url);
     const pathname = urlObj.pathname;
