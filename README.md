@@ -83,7 +83,7 @@ import '@eternalheart/react-file-preview/style.css';
 
 ## 🚀 Quick Start
 
-📖 **New to this library?** Check out the [Quick Start Guide](./QUICK_START.md) for a 5-minute introduction!
+📖 **New to this library?** Check out the [Quick Start Guide](https://wh131462.github.io/react-file-preview/docs/guide/getting-started.html) for a 5-minute introduction!
 
 ### Basic Usage
 
@@ -344,32 +344,6 @@ The component is built with Tailwind CSS. You can customize styles by overriding
 
 - [Online Demo](https://wh131462.github.io/react-file-preview) - Live demo
 
-## 📦 Package Information
-
-### Bundle Size
-
-- **ESM**: ~54 KB (gzipped: ~12 KB)
-- **CJS**: ~37 KB (gzipped: ~11 KB)
-- **CSS**: ~56 KB (gzipped: ~14 KB)
-
-### Peer Dependencies
-
-- `react`: ^18.0.0
-- `react-dom`: ^18.0.0
-
-### Exports
-
-```json
-{
-  ".": {
-    "types": "./lib/index.d.ts",
-    "import": "./lib/index.mjs",
-    "require": "./lib/index.cjs"
-  },
-  "./style.css": "./lib/index.css"
-}
-```
-
 ## 🛠️ Development
 
 ### For Library Development
@@ -389,23 +363,6 @@ pnpm build:lib
 
 # Build demo app (for GitHub Pages)
 pnpm build:demo
-```
-
-### Project Structure
-
-```
-react-file-preview/
-├── src/
-│   ├── index.ts              # Library entry point
-│   ├── FilePreviewModal.tsx  # Main component
-│   ├── types.ts              # Type definitions
-│   ├── utils/                # Utility functions
-│   ├── renderers/            # File type renderers
-│   ├── App.tsx               # Demo app
-│   └── main.tsx              # Demo app entry
-├── lib/                      # Built library (npm package)
-├── dist/                     # Built demo app (GitHub Pages)
-└── vite.config.lib.ts        # Library build config
 ```
 
 ## 📄 License

@@ -2,7 +2,7 @@
 
 [English](./README.md) | 简体中文
 
-一个现代化、功能丰富的 React 文件预览组件,支持图片、视频、音频、PDF、Office 文档(Word、Excel、PowerPoint)、Markdown 和代码文件预览。
+一个现代化、功能丰富的 React 文件预览组件，支持图片、视频、音频、PDF、Office 文档（Word、Excel、PowerPoint）、Markdown 和代码文件预览。
 
 ## 📚 文档
 
@@ -44,12 +44,14 @@ pnpm deploy           # 部署示例和文档到 GitHub Pages
 pnpm pub              # 发布库到 npm
 ```
 
+
+
 ## ✨ 特性
 
-- 🎨 **现代化 UI** - Apple 风格的简约设计,毛玻璃效果
+- 🎨 **现代化 UI** - Apple 风格的简约设计，毛玻璃效果
 - 📁 **多格式支持** - 支持 20+ 种文件格式
 - 🖼️ **强大的图片查看器** - 缩放、旋转、拖拽、滚轮缩放
-- 🎬 **自定义视频播放器** - 基于 Video.js,支持多种视频格式
+- 🎬 **自定义视频播放器** - 基于 Video.js，支持多种视频格式
 - 🎵 **自定义音频播放器** - 精美的音频控制界面
 - 📄 **PDF 查看器** - 支持分页浏览
 - 📊 **Office 文档支持** - Word、Excel、PowerPoint 文件预览
@@ -64,30 +66,30 @@ pnpm pub              # 发布库到 npm
 
 ```bash
 # 使用 npm
-npm install react-file-preview
+npm install @eternalheart/react-file-preview
 
 # 使用 yarn
-yarn add react-file-preview
+yarn add @eternalheart/react-file-preview
 
 # 使用 pnpm
-pnpm add react-file-preview
+pnpm add @eternalheart/react-file-preview
 ```
 
 **重要提示：** 你还需要导入 CSS 文件：
 
 ```tsx
-import 'react-file-preview/style.css';
+import '@eternalheart/react-file-preview/style.css';
 ```
 
 ## 🚀 快速开始
 
-📖 **第一次使用？** 查看 [快速开始指南](./QUICK_START.md) 获取 5 分钟入门教程！
+📖 **第一次使用？** 查看 [快速开始指南](https://wh131462.github.io/react-file-preview/docs/guide/getting-started.html) 获取 5 分钟入门教程！
 
 ### 基础用法
 
 ```tsx
-import { FilePreviewModal } from 'react-file-preview';
-import 'react-file-preview/style.css';
+import { FilePreviewModal } from '@eternalheart/react-file-preview';
+import '@eternalheart/react-file-preview/style.css';
 import { useState } from 'react';
 
 function App() {
@@ -231,7 +233,7 @@ const files = [
 - **PowerPoint**: PPTX/PPT 格式支持、幻灯片预览
 
 ### 代码 & 文本
-- **Markdown**: GitHub Flavored Markdown,代码高亮
+- **Markdown**: GitHub Flavored Markdown，代码高亮
 - **代码文件**: JS, TS, Python, Java, C++, Go, Rust 等 40+ 种语言
 - **文本文件**: TXT, LOG, CSV, JSON, YAML, XML 等
 
@@ -261,7 +263,7 @@ interface PreviewFileLink {
   id?: string;       // 可选的唯一标识符
   name: string;      // 文件名
   type: string;      // MIME 类型
-  url: string;       // 文件 URL (支持 blob URL 和 HTTP URL)
+  url: string;       // 文件 URL（支持 blob URL 和 HTTP URL）
   size?: number;     // 文件大小（字节）
 }
 
@@ -310,18 +312,18 @@ const files = [
 - **PDF**: `application/pdf`
 
 #### 媒体文件
-- **图片**: `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/svg+xml`, 等
-- **视频**: `video/mp4`, `video/webm`, `video/ogg`, 等
-- **音频**: `audio/mpeg`, `audio/wav`, `audio/ogg`, 等
+- **图片**: `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/svg+xml` 等
+- **视频**: `video/mp4`, `video/webm`, `video/ogg` 等
+- **音频**: `audio/mpeg`, `audio/wav`, `audio/ogg` 等
 
 #### 文本文件
 - **Markdown**: 文件扩展名 `.md` 或 `.markdown`
-- **代码**: 根据文件扩展名自动识别 (`.js`, `.ts`, `.py`, `.java`, 等)
-- **纯文本**: `text/plain`, `text/csv`, 等
+- **代码**: 根据文件扩展名自动识别 (`.js`, `.ts`, `.py`, `.java` 等)
+- **纯文本**: `text/plain`, `text/csv` 等
 
 ## 🎨 自定义样式
 
-组件使用 Tailwind CSS 构建,您可以通过覆盖 CSS 变量来自定义样式:
+组件使用 Tailwind CSS 构建，您可以通过覆盖 CSS 变量来自定义样式：
 
 ```css
 /* 自定义主题色 */
@@ -336,37 +338,11 @@ const files = [
 - `ESC` - 关闭预览
 - `←` - 上一个文件
 - `→` - 下一个文件
-- `滚轮` - 缩放图片 (仅图片预览)
+- `滚轮` - 缩放图片（仅图片预览）
 
 ## 📚 文档
 
 - [在线演示](https://wh131462.github.io/react-file-preview) - 在线 Demo
-
-## 📦 包信息
-
-### 打包体积
-
-- **ESM**: ~54 KB (gzipped: ~12 KB)
-- **CJS**: ~37 KB (gzipped: ~11 KB)
-- **CSS**: ~56 KB (gzipped: ~14 KB)
-
-### Peer Dependencies
-
-- `react`: ^18.0.0
-- `react-dom`: ^18.0.0
-
-### 导出
-
-```json
-{
-  ".": {
-    "types": "./lib/index.d.ts",
-    "import": "./lib/index.mjs",
-    "require": "./lib/index.cjs"
-  },
-  "./style.css": "./lib/index.css"
-}
-```
 
 ## 🛠️ 开发
 
@@ -389,30 +365,13 @@ pnpm build:lib
 pnpm build:demo
 ```
 
-### 项目结构
-
-```
-react-file-preview/
-├── src/
-│   ├── index.ts              # 库入口文件
-│   ├── FilePreviewModal.tsx  # 主组件
-│   ├── types.ts              # 类型定义
-│   ├── utils/                # 工具函数
-│   ├── renderers/            # 文件类型渲染器
-│   ├── App.tsx               # 演示应用
-│   └── main.tsx              # 演示应用入口
-├── lib/                      # 构建后的库（npm 包）
-├── dist/                     # 构建后的演示应用（GitHub Pages）
-└── vite.config.lib.ts        # 库构建配置
-```
-
 ## 📄 许可证
 
 [MIT](./LICENSE) © [EternalHeart](https://github.com/wh131462)
 
 ## 🤝 贡献
 
-欢迎提交 Issue 和 Pull Request!
+欢迎提交 Issue 和 Pull Request！
 
 ## 🔗 相关链接
 
@@ -420,4 +379,3 @@ react-file-preview/
 - [npm](https://www.npmjs.com/package/@eternalheart/react-file-preview)
 - [在线演示](https://wh131462.github.io/react-file-preview)
 - [问题反馈](https://github.com/wh131462/react-file-preview/issues)
-
