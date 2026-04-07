@@ -9,6 +9,8 @@ export const VERSION = packageJson.version;
 
 // 导出主组件
 export { FilePreviewModal } from './FilePreviewModal';
+export { FilePreviewEmbed } from './FilePreviewEmbed';
+export { FilePreviewContent } from './FilePreviewContent';
 
 // 导出类型定义
 export type {

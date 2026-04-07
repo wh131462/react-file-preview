@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
-import { FilePreviewModal, VERSION } from '@eternalheart/react-file-preview';
+import { FilePreviewModal, FilePreviewEmbed, VERSION } from '@eternalheart/react-file-preview';
 import type { PreviewFile, PreviewFileInput, CustomRenderer } from '@eternalheart/react-file-preview';
 import '@eternalheart/react-file-preview/style.css';
 import { FileText, Image, FileSpreadsheet, Video, Music, Upload, X, Package, BookOpen, Code } from 'lucide-react';
@@ -35,6 +35,7 @@ function JsonViewer({ url }: { url: string }) {
 function App() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
+  const [embedIndex, setEmbedIndex] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<PreviewFile[]>([]);
   const [allFiles, setAllFiles] = useState<PreviewFileInput[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -286,6 +287,26 @@ function App() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {/* 嵌入式预览演示 */}
+        {allFiles.length > 0 && (
+          <div className="max-w-6xl mx-auto mb-8 sm:mb-12">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">嵌入式预览 (FilePreviewEmbed)</h2>
+            <p className="text-gray-400 text-sm mb-4 sm:mb-6">
+              将预览组件直接嵌入到页面的 div 容器中,无需弹窗。下方容器高度固定为 520px。
+            </p>
+            <div
+              className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-white/10 overflow-hidden"
+              style={{ height: 520 }}
+            >
+              <FilePreviewEmbed
+                files={allFiles}
+                currentIndex={embedIndex}
+                onNavigate={setEmbedIndex}
+              />
             </div>
           </div>
         )}
