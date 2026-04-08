@@ -2,19 +2,22 @@
 layout: home
 
 hero:
-  name: React File Preview
+  name: File Preview
   text: 现代化的文件预览组件
-  tagline: 支持图片、视频、音频、PDF、Office 文档、Markdown 和代码文件
+  tagline: 同时支持 React 与 Vue 3 · 图片、视频、音频、PDF、Office 文档、Markdown 和代码文件
   image:
     src: /icon.svg
-    alt: React File Preview
+    alt: File Preview
   actions:
     - theme: brand
       text: 快速开始
       link: /guide/getting-started
     - theme: alt
-      text: 在线示例
+      text: React 在线示例
       link: https://wh131462.github.io/react-file-preview/
+    - theme: alt
+      text: Vue 在线示例
+      link: https://wh131462.github.io/react-file-preview/vue/
     - theme: alt
       text: GitHub
       link: https://github.com/wh131462/react-file-preview
@@ -30,8 +33,8 @@ features:
       src: /assets/icons/lightning.svg
       width: 48
       height: 48
-    title: 高性能
-    details: 基于 React 18 和现代浏览器 API，提供流畅的预览体验
+    title: React + Vue 双框架
+    details: 提供功能完全对等的 React 和 Vue 3 两个版本，共享底层 core 包
   - icon:
       src: /assets/icons/palette.svg
       width: 48
@@ -64,16 +67,20 @@ features:
 
 ::: code-group
 
-```bash [pnpm]
+```bash [React · pnpm]
 pnpm add @eternalheart/react-file-preview
 ```
 
-```bash [npm]
+```bash [Vue 3 · pnpm]
+pnpm add @eternalheart/vue-file-preview
+```
+
+```bash [React · npm]
 npm install @eternalheart/react-file-preview
 ```
 
-```bash [yarn]
-yarn add @eternalheart/react-file-preview
+```bash [Vue 3 · npm]
+npm install @eternalheart/vue-file-preview
 ```
 
 :::
@@ -82,7 +89,10 @@ yarn add @eternalheart/react-file-preview
 
 使用 **弹窗模式** (`FilePreviewModal`):
 
-```tsx
+::: code-group
+
+```tsx [React]
+import { useState } from 'react'
 import { FilePreviewModal } from '@eternalheart/react-file-preview'
 import '@eternalheart/react-file-preview/style.css'
 
@@ -106,9 +116,36 @@ function App() {
 }
 ```
 
+```vue [Vue 3]
+<script setup>
+import { ref } from 'vue'
+import { FilePreviewModal } from '@eternalheart/vue-file-preview'
+import '@eternalheart/vue-file-preview/style.css'
+
+const isOpen = ref(false)
+const files = [
+  { url: 'https://example.com/document.pdf', name: 'document.pdf' }
+]
+</script>
+
+<template>
+  <button @click="isOpen = true">预览文件</button>
+  <FilePreviewModal
+    :is-open="isOpen"
+    :files="files"
+    :current-index="0"
+    @close="isOpen = false"
+  />
+</template>
+```
+
+:::
+
 使用 **嵌入模式** (`FilePreviewEmbed`) — 将预览直接内联到页面任意容器:
 
-```tsx
+::: code-group
+
+```tsx [React]
 import { FilePreviewEmbed } from '@eternalheart/react-file-preview'
 import '@eternalheart/react-file-preview/style.css'
 
@@ -125,6 +162,25 @@ function Detail() {
 }
 ```
 
+```vue [Vue 3]
+<script setup>
+import { FilePreviewEmbed } from '@eternalheart/vue-file-preview'
+import '@eternalheart/vue-file-preview/style.css'
+
+const files = [
+  { url: 'https://example.com/document.pdf', name: 'document.pdf' }
+]
+</script>
+
+<template>
+  <div style="width: 100%; height: 520px">
+    <FilePreviewEmbed :files="files" />
+  </div>
+</template>
+```
+
+:::
+
 ## 支持的文件类型
 
 - **图片**: JPG, PNG, GIF, WebP, SVG, BMP, ICO
@@ -133,7 +189,17 @@ function Detail() {
 - **文档**: PDF, Word (DOCX), Excel (XLSX), PowerPoint (PPT/PPTX), Outlook (MSG)
 - **文本**: Markdown, 代码文件 (支持语法高亮)
 
+## 包架构
+
+```
+@eternalheart/file-preview-core    # 框架无关的核心工具（types/工具函数/PDF 配置）
+       │
+       ├── @eternalheart/react-file-preview   # React 18+ 版本
+       └── @eternalheart/vue-file-preview     # Vue 3 版本
+```
+
+两个 UI 包共享同一份纯 TS 工具与类型定义，行为完全对齐，可按需选择适合你项目的版本。
+
 ## 许可证
 
 [MIT License](https://github.com/wh131462/react-file-preview/blob/main/LICENSE)
-

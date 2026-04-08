@@ -1,24 +1,48 @@
 # 安装
 
+本库提供 **React** 和 **Vue 3** 两个版本，根据你的项目选择对应的包。
+
 ## 环境要求
 
-- React >= 18.0.0
-- React DOM >= 18.0.0
+::: code-group
+
+```text [React]
+React >= 18.0.0
+React DOM >= 18.0.0
+```
+
+```text [Vue 3]
+Vue >= 3.4.0
+```
+
+:::
 
 ## 包管理器安装
 
 ::: code-group
 
-```bash [pnpm]
+```bash [React · pnpm]
 pnpm add @eternalheart/react-file-preview
 ```
 
-```bash [npm]
+```bash [Vue 3 · pnpm]
+pnpm add @eternalheart/vue-file-preview
+```
+
+```bash [React · npm]
 npm install @eternalheart/react-file-preview
 ```
 
-```bash [yarn]
+```bash [Vue 3 · npm]
+npm install @eternalheart/vue-file-preview
+```
+
+```bash [React · yarn]
 yarn add @eternalheart/react-file-preview
+```
+
+```bash [Vue 3 · yarn]
+yarn add @eternalheart/vue-file-preview
 ```
 
 :::
@@ -27,9 +51,17 @@ yarn add @eternalheart/react-file-preview
 
 在你的应用入口文件中导入样式：
 
-```tsx
+::: code-group
+
+```tsx [React]
 import '@eternalheart/react-file-preview/style.css'
 ```
+
+```ts [Vue 3]
+import '@eternalheart/vue-file-preview/style.css'
+```
+
+:::
 
 ## PDF 支持
 
@@ -45,11 +77,38 @@ Worker 文件会自动从 CDN 加载，确保：
 组件会自动使用 unpkg CDN 加载 PDF.js worker 文件，无需任何手动配置。
 :::
 
+如需自定义 worker 路径（例如生产环境用本地静态文件），可在应用入口调用配置函数：
+
+::: code-group
+
+```tsx [React]
+import { configurePdfjs } from '@eternalheart/react-file-preview'
+
+configurePdfjs({
+  workerSrc: '/pdfjs/pdf.worker.min.mjs',
+  cMapUrl: '/pdfjs/cmaps/',
+  cMapPacked: true,
+})
+```
+
+```ts [Vue 3]
+import { configurePdfWorker } from '@eternalheart/vue-file-preview'
+import * as pdfjsLib from 'pdfjs-dist/build/pdf.mjs'
+
+configurePdfWorker(pdfjsLib, {
+  workerSrc: '/pdfjs/pdf.worker.min.mjs',
+  cMapUrl: '/pdfjs/cmaps/',
+  cMapPacked: true,
+})
+```
+
+:::
+
 ## 验证安装
 
-创建一个简单的示例来验证安装：
+::: code-group
 
-```tsx
+```tsx [React]
 import { useState } from 'react'
 import { FilePreviewModal } from '@eternalheart/react-file-preview'
 import '@eternalheart/react-file-preview/style.css'
@@ -75,8 +134,31 @@ function App() {
 export default App
 ```
 
+```vue [Vue 3]
+<script setup>
+import { ref } from 'vue'
+import { FilePreviewModal } from '@eternalheart/vue-file-preview'
+import '@eternalheart/vue-file-preview/style.css'
+
+const isOpen = ref(false)
+</script>
+
+<template>
+  <div>
+    <button @click="isOpen = true">打开预览</button>
+    <FilePreviewModal
+      :is-open="isOpen"
+      :files="[{ url: 'https://via.placeholder.com/800', name: 'test.png' }]"
+      :current-index="0"
+      @close="isOpen = false"
+    />
+  </div>
+</template>
+```
+
+:::
+
 ## 下一步
 
 - [基础用法](./basic-usage) - 学习如何使用组件
 - [支持的文件类型](./supported-types) - 查看所有支持的文件格式
-

@@ -2,15 +2,18 @@ import { defineConfig } from 'vitepress'
 
 // 环境检测：开发环境和生产环境的 URL
 const isDev = process.env.NODE_ENV !== 'production'
-const EXAMPLE_URL = isDev
+const REACT_EXAMPLE_URL = isDev
   ? 'http://localhost:4800/'
   : 'https://wh131462.github.io/react-file-preview/'
+const VUE_EXAMPLE_URL = isDev
+  ? 'http://localhost:4802/'
+  : 'https://wh131462.github.io/react-file-preview/vue/'
 
 const base = '/react-file-preview/docs/'
 
 export default defineConfig({
-  title: 'React File Preview',
-  description: 'A modern, feature-rich file preview component for React',
+  title: 'File Preview',
+  description: 'A modern, feature-rich file preview component for React & Vue 3',
   base,
 
   head: [
@@ -31,7 +34,20 @@ export default defineConfig({
       { text: '首页', link: '/' },
       { text: '指南', link: '/guide/getting-started' },
       { text: 'API', link: '/api/components' },
-      { text: '在线示例', link: EXAMPLE_URL, target: '_blank' }
+      {
+        text: '在线示例',
+        items: [
+          { text: 'React 版本', link: REACT_EXAMPLE_URL, target: '_blank' },
+          { text: 'Vue 3 版本', link: VUE_EXAMPLE_URL, target: '_blank' },
+        ],
+      },
+      {
+        text: '框架',
+        items: [
+          { text: 'React (@eternalheart/react-file-preview)', link: 'https://www.npmjs.com/package/@eternalheart/react-file-preview', target: '_blank' },
+          { text: 'Vue 3 (@eternalheart/vue-file-preview)', link: 'https://www.npmjs.com/package/@eternalheart/vue-file-preview', target: '_blank' },
+        ],
+      },
     ],
 
     sidebar: {
@@ -79,4 +95,3 @@ export default defineConfig({
     }
   }
 })
-
