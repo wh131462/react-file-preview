@@ -40,6 +40,7 @@ export default defineConfig({
         'react',
         'react-dom',
         'react/jsx-runtime',
+        '@eternalheart/file-preview-core',
         'framer-motion',
         'lucide-react',
         'pdfjs-dist',
