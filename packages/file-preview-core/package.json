@@ -1,0 +1,63 @@
+{
+  "name": "@eternalheart/file-preview-core",
+  "version": "0.1.0",
+  "description": "Framework-agnostic core utilities for file preview (used by react-file-preview and vue-file-preview).",
+  "type": "module",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.mjs",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.cjs"
+    }
+  },
+  "files": [
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "file-preview",
+    "core",
+    "utilities",
+    "excel",
+    "pdf",
+    "framework-agnostic"
+  ],
+  "homepage": "https://wh131462.github.io/react-file-preview",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wh131462/react-file-preview.git",
+    "directory": "packages/file-preview-core"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "EternalHeart",
+    "email": "hao131462@qq.com",
+    "url": "https://github.com/wh131462"
+  },
+  "scripts": {
+    "build": "vite build && tsc --project tsconfig.json",
+    "dev": "vite build --watch --emptyOutDir false",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "exceljs": "^4.4.0"
+  },
+  "peerDependenciesMeta": {
+    "exceljs": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "exceljs": "^4.4.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}
