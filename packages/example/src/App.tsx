@@ -10,6 +10,9 @@ const isDev = import.meta.env.DEV;
 const DOCS_URL = isDev
   ? 'http://localhost:4801/react-file-preview/docs/'
   : 'https://wh131462.github.io/react-file-preview/docs/';
+const VUE_EXAMPLE_URL = isDev
+  ? 'http://localhost:4802/'
+  : 'https://wh131462.github.io/react-file-preview/vue/';
 
 // JSON 查看器组件
 function JsonViewer({ url }: { url: string }) {
@@ -148,7 +151,21 @@ function App() {
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 sm:gap-4 flex-shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+              {/* 框架切换器 */}
+              <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/5 border border-white/10">
+                <span className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md">
+                  React
+                </span>
+                <a
+                  href={VUE_EXAMPLE_URL}
+                  className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+                  title="切换到 Vue 版本"
+                >
+                  Vue
+                </a>
+              </div>
+
               <a
                 href="https://github.com/wh131462/react-file-preview"
                 target="_blank"
