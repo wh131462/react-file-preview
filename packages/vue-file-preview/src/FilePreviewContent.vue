@@ -11,6 +11,9 @@ import {
   ChevronRight,
   Scan,
   RefreshCw,
+  Maximize2,
+  Minimize2,
+  List,
 } from 'lucide-vue-next';
 import {
   normalizeFiles,
@@ -24,6 +27,7 @@ import DocxRenderer from './renderers/DocxRenderer.vue';
 import XlsxRenderer from './renderers/XlsxRenderer.vue';
 import PptxRenderer from './renderers/PptxRenderer.vue';
 import MsgRenderer from './renderers/MsgRenderer.vue';
+import EpubRenderer from './renderers/EpubRenderer.vue';
 import VideoRenderer from './renderers/VideoRenderer.vue';
 import AudioRenderer from './renderers/AudioRenderer.vue';
 import MarkdownRenderer from './renderers/MarkdownRenderer.vue';
@@ -222,7 +226,18 @@ const handleDownload = () => {
 
 const showZoomControls = computed(() => fileType.value === 'image' || fileType.value === 'pdf');
 const showRotateControl = computed(() => fileType.value === 'image');
+const showEpubControls = computed(() => fileType.value === 'epub');
 const showCloseButton = computed(() => props.mode === 'modal');
+
+const epubRef = ref<{ prevChapter: () => void; nextChapter: () => void; toggleFullWidth: () => void; toggleToc: () => void } | null>(null);
+const epubCurrent = ref(0);
+const epubTotal = ref(0);
+const epubFullWidth = ref(false);
+
+const handleEpubChapterChange = (current: number, total: number) => {
+  epubCurrent.value = current;
+  epubTotal.value = total;
+};
 </script>
 
 <template>
@@ -323,6 +338,30 @@ const showCloseButton = computed(() => props.mode === 'modal');
             <div class="vfp-w-px vfp-h-4 vfp-bg-white/10 vfp-mx-1" />
           </template>
 
+          <template v-if="showEpubControls">
+            <button class="toolbar-btn" title="目录" @click="epubRef?.toggleToc()">
+              <List class="vfp-w-4 vfp-h-4" />
+            </button>
+            <div class="vfp-w-px vfp-h-4 vfp-bg-white/10 vfp-mx-1" />
+            <button class="toolbar-btn" title="上一章" @click="epubRef?.prevChapter()">
+              <ChevronLeft class="vfp-w-4 vfp-h-4" />
+            </button>
+            <span
+              class="vfp-text-white/60 vfp-text-xs vfp-min-w-[4rem] vfp-text-center vfp-font-medium vfp-tabular-nums"
+            >
+              {{ epubCurrent }} / {{ epubTotal }}
+            </span>
+            <button class="toolbar-btn" title="下一章" @click="epubRef?.nextChapter()">
+              <ChevronRight class="vfp-w-4 vfp-h-4" />
+            </button>
+            <div class="vfp-w-px vfp-h-4 vfp-bg-white/10 vfp-mx-1" />
+            <button class="toolbar-btn" :title="epubFullWidth ? '正常宽度' : '全屏宽度'" @click="epubRef?.toggleFullWidth()">
+              <Minimize2 v-if="epubFullWidth" class="vfp-w-4 vfp-h-4" />
+              <Maximize2 v-else class="vfp-w-4 vfp-h-4" />
+            </button>
+            <div class="vfp-w-px vfp-h-4 vfp-bg-white/10 vfp-mx-1" />
+          </template>
+
           <button class="toolbar-btn" title="下载" @click="handleDownload">
             <Download class="vfp-w-4 vfp-h-4" />
           </button>
@@ -334,7 +373,7 @@ const showCloseButton = computed(() => props.mode === 'modal');
 
       <!-- 移动端第二行工具按钮 -->
       <div
-        v-if="showZoomControls || showRotateControl"
+        v-if="showZoomControls || showRotateControl || showEpubControls"
         class="vfp-flex vfp-items-center vfp-gap-1 vfp-px-3 vfp-pb-1.5 vfp-overflow-x-auto scrollbar-hide md:vfp-hidden"
       >
         <template v-if="showZoomControls">
@@ -395,6 +434,28 @@ const showCloseButton = computed(() => props.mode === 'modal');
         <button class="toolbar-btn" title="复原" @click="handleReset">
           <RefreshCw class="vfp-w-4 vfp-h-4" />
         </button>
+
+        <template v-if="showEpubControls">
+          <div class="vfp-w-px vfp-h-4 vfp-bg-white/10 vfp-mx-0.5" />
+          <button class="toolbar-btn" title="目录" @click="epubRef?.toggleToc()">
+            <List class="vfp-w-4 vfp-h-4" />
+          </button>
+          <button class="toolbar-btn" title="上一章" @click="epubRef?.prevChapter()">
+            <ChevronLeft class="vfp-w-4 vfp-h-4" />
+          </button>
+          <span
+            class="vfp-text-white/60 vfp-text-xs vfp-min-w-[4rem] vfp-text-center vfp-font-medium vfp-tabular-nums"
+          >
+            {{ epubCurrent }} / {{ epubTotal }}
+          </span>
+          <button class="toolbar-btn" title="下一章" @click="epubRef?.nextChapter()">
+            <ChevronRight class="vfp-w-4 vfp-h-4" />
+          </button>
+          <button class="toolbar-btn" :title="epubFullWidth ? '正常宽度' : '全屏宽度'" @click="epubRef?.toggleFullWidth()">
+            <Minimize2 v-if="epubFullWidth" class="vfp-w-4 vfp-h-4" />
+            <Maximize2 v-else class="vfp-w-4 vfp-h-4" />
+          </button>
+        </template>
       </div>
     </div>
 
@@ -431,6 +492,13 @@ const showCloseButton = computed(() => props.mode === 'modal');
           <XlsxRenderer v-else-if="fileType === 'xlsx'" :url="currentFile.url" />
           <PptxRenderer v-else-if="fileType === 'pptx'" :url="currentFile.url" />
           <MsgRenderer v-else-if="fileType === 'msg'" :url="currentFile.url" />
+          <EpubRenderer
+            v-else-if="fileType === 'epub'"
+            ref="epubRef"
+            :url="currentFile.url"
+            @chapter-change="handleEpubChapterChange"
+            @full-width-change="(v: boolean) => (epubFullWidth = v)"
+          />
           <VideoRenderer v-else-if="fileType === 'video'" :url="currentFile.url" />
           <AudioRenderer
             v-else-if="fileType === 'audio'"

@@ -105,6 +105,17 @@ React File Preview 支持多种常见的文件格式预览。
 - 邮件正文渲染
 - 附件列表展示
 
+## 电子书
+
+- **EPUB** - `.epub`
+
+### 特性
+
+- 基于 epub.js 渲染
+- 左右翻页（按钮 / 键盘方向键）
+- 章节自动分页与页码显示
+- 自适应屏幕宽度
+
 ## Markdown 文档
 
 - **Markdown** - `.md`, `.markdown`
@@ -179,6 +190,7 @@ React File Preview 支持多种常见的文件格式预览。
 - `xlsx` - Excel 表格
 - `pptx` - PowerPoint 演示文稿
 - `msg` - Outlook 邮件
+- `epub` - EPUB 电子书
 - `video` - 视频文件
 - `audio` - 音频文件
 - `markdown` - Markdown 文件

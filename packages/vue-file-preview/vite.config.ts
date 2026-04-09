@@ -38,6 +38,7 @@ export default defineConfig({
         'vue',
         '@eternalheart/file-preview-core',
         '@kenjiuno/msgreader',
+        '@likecoin/epub-ts',
         'exceljs',
         'lucide-vue-next',
         'mammoth',

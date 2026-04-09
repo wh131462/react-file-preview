@@ -25,6 +25,9 @@ export function getFileType(file: PreviewFile): FileType {
   if (mimeType.includes('ms-outlook') || ext === 'msg') {
     return 'msg';
   }
+  if (mimeType.includes('epub') || ext === 'epub') {
+    return 'epub';
+  }
   if (mimeType.startsWith('video/') || ['mp4', 'webm', 'ogg', 'ogv', 'mov', 'avi', 'mkv', 'm4v', '3gp', 'flv'].includes(ext)) {
     return 'video';
   }

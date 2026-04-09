@@ -41,6 +41,7 @@ export default defineConfig({
         'react-dom',
         'react/jsx-runtime',
         '@eternalheart/file-preview-core',
+        '@likecoin/epub-ts',
         'framer-motion',
         'lucide-react',
         'pdfjs-dist',

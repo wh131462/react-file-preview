@@ -11,6 +11,9 @@ import {
   ChevronRight,
   Scan,
   RefreshCw,
+  Maximize2,
+  Minimize2,
+  List,
 } from 'lucide-react';
 
 const OriginalSizeIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -38,6 +41,8 @@ import { DocxRenderer } from './renderers/DocxRenderer';
 import { XlsxRenderer } from './renderers/XlsxRenderer';
 import { PptxRenderer } from './renderers/PptxRenderer';
 import { MsgRenderer } from './renderers/MsgRenderer';
+import { EpubRenderer } from './renderers/EpubRenderer';
+import type { EpubRendererHandle } from './renderers/EpubRenderer';
 import { VideoRenderer } from './renderers/VideoRenderer';
 import { AudioRenderer } from './renderers/AudioRenderer';
 import { MarkdownRenderer } from './renderers/MarkdownRenderer';
@@ -76,6 +81,9 @@ const getFileType = (file: PreviewFile): FileType => {
   }
   if (mimeType.includes('ms-outlook') || ext === 'msg') {
     return 'msg';
+  }
+  if (mimeType.includes('epub') || ext === 'epub') {
+    return 'epub';
   }
   if (mimeType.startsWith('video/') || ['mp4', 'webm', 'ogg', 'ogv', 'mov', 'avi', 'mkv', 'm4v', '3gp', 'flv'].includes(ext)) {
     return 'video';
@@ -117,6 +125,10 @@ export const FilePreviewContent: React.FC<FilePreviewContentProps> = ({
   const [imageResetKey, setImageResetKey] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  const epubRef = useRef<EpubRendererHandle>(null);
+  const [epubCurrent, setEpubCurrent] = useState(0);
+  const [epubTotal, setEpubTotal] = useState(0);
+  const [epubFullWidth, setEpubFullWidth] = useState(false);
 
   // 导航箭头自动隐藏
   const [navVisible, setNavVisible] = useState(true);
@@ -268,10 +280,16 @@ export const FilePreviewContent: React.FC<FilePreviewContentProps> = ({
     link.click();
   }, [currentFile]);
 
+  const handleEpubChapterChange = useCallback((current: number, total: number) => {
+    setEpubCurrent(current);
+    setEpubTotal(total);
+  }, []);
+
   if (!currentFile) return null;
 
   const showZoomControls = fileType === 'image' || fileType === 'pdf';
   const showRotateControl = fileType === 'image';
+  const showEpubControls = fileType === 'epub';
   const showCloseButton = mode === 'modal' && !!onClose;
 
   return (
@@ -381,6 +399,37 @@ export const FilePreviewContent: React.FC<FilePreviewContentProps> = ({
               </>
             )}
 
+            {showEpubControls && (
+              <>
+                <ToolbarButton
+                  icon={<List className="rfp-w-4 rfp-h-4" />}
+                  label="目录"
+                  onClick={() => epubRef.current?.toggleToc()}
+                />
+                <div className="rfp-w-px rfp-h-4 rfp-bg-white/10 rfp-mx-1" />
+                <ToolbarButton
+                  icon={<ChevronLeft className="rfp-w-4 rfp-h-4" />}
+                  label="上一章"
+                  onClick={() => epubRef.current?.prevChapter()}
+                />
+                <span className="rfp-text-white/60 rfp-text-xs rfp-min-w-[4rem] rfp-text-center rfp-font-medium rfp-tabular-nums">
+                  {epubCurrent} / {epubTotal}
+                </span>
+                <ToolbarButton
+                  icon={<ChevronRight className="rfp-w-4 rfp-h-4" />}
+                  label="下一章"
+                  onClick={() => epubRef.current?.nextChapter()}
+                />
+                <div className="rfp-w-px rfp-h-4 rfp-bg-white/10 rfp-mx-1" />
+                <ToolbarButton
+                  icon={epubFullWidth ? <Minimize2 className="rfp-w-4 rfp-h-4" /> : <Maximize2 className="rfp-w-4 rfp-h-4" />}
+                  label={epubFullWidth ? '正常宽度' : '全屏宽度'}
+                  onClick={() => epubRef.current?.toggleFullWidth()}
+                />
+                <div className="rfp-w-px rfp-h-4 rfp-bg-white/10 rfp-mx-1" />
+              </>
+            )}
+
             <ToolbarButton
               icon={<Download className="rfp-w-4 rfp-h-4" />}
               label="下载"
@@ -396,8 +445,8 @@ export const FilePreviewContent: React.FC<FilePreviewContentProps> = ({
           </div>
         </div>
 
-        {/* 第二行:移动端工具按钮(仅 image/pdf 显示) */}
-        {(showZoomControls || showRotateControl) && (
+        {/* 第二行:移动端工具按钮(image/pdf/epub) */}
+        {(showZoomControls || showRotateControl || showEpubControls) && (
           <div className="rfp-flex rfp-items-center rfp-gap-1 rfp-px-3 rfp-pb-1.5 rfp-overflow-x-auto scrollbar-hide md:rfp-hidden">
             {showZoomControls && (
               <>
@@ -456,6 +505,35 @@ export const FilePreviewContent: React.FC<FilePreviewContentProps> = ({
               label="复原"
               onClick={handleReset}
             />
+
+            {showEpubControls && (
+              <>
+                <div className="rfp-w-px rfp-h-4 rfp-bg-white/10 rfp-mx-0.5" />
+                <ToolbarButton
+                  icon={<List className="rfp-w-4 rfp-h-4" />}
+                  label="目录"
+                  onClick={() => epubRef.current?.toggleToc()}
+                />
+                <ToolbarButton
+                  icon={<ChevronLeft className="rfp-w-4 rfp-h-4" />}
+                  label="上一章"
+                  onClick={() => epubRef.current?.prevChapter()}
+                />
+                <span className="rfp-text-white/60 rfp-text-xs rfp-min-w-[4rem] rfp-text-center rfp-font-medium rfp-tabular-nums">
+                  {epubCurrent} / {epubTotal}
+                </span>
+                <ToolbarButton
+                  icon={<ChevronRight className="rfp-w-4 rfp-h-4" />}
+                  label="下一章"
+                  onClick={() => epubRef.current?.nextChapter()}
+                />
+                <ToolbarButton
+                  icon={epubFullWidth ? <Minimize2 className="rfp-w-4 rfp-h-4" /> : <Maximize2 className="rfp-w-4 rfp-h-4" />}
+                  label={epubFullWidth ? '正常宽度' : '全屏宽度'}
+                  onClick={() => epubRef.current?.toggleFullWidth()}
+                />
+              </>
+            )}
           </div>
         )}
       </motion.div>
@@ -496,6 +574,14 @@ export const FilePreviewContent: React.FC<FilePreviewContentProps> = ({
             {fileType === 'xlsx' && <XlsxRenderer url={currentFile.url} />}
             {fileType === 'pptx' && <PptxRenderer url={currentFile.url} />}
             {fileType === 'msg' && <MsgRenderer url={currentFile.url} />}
+            {fileType === 'epub' && (
+              <EpubRenderer
+                ref={epubRef}
+                url={currentFile.url}
+                onChapterChange={handleEpubChapterChange}
+                onFullWidthChange={setEpubFullWidth}
+              />
+            )}
             {fileType === 'video' && <VideoRenderer url={currentFile.url} />}
             {fileType === 'audio' && (
               <AudioRenderer url={currentFile.url} fileName={currentFile.name} />

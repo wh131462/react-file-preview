@@ -38,14 +38,14 @@
     "markdown-viewer",
     "code-viewer"
   ],
-  "homepage": "https://wh131462.github.io/react-file-preview",
+  "homepage": "https://wh131462.github.io/file-preview",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wh131462/react-file-preview.git",
+    "url": "git+https://github.com/wh131462/file-preview.git",
     "directory": "packages/vue-file-preview"
   },
   "bugs": {
-    "url": "https://github.com/wh131462/react-file-preview/issues"
+    "url": "https://github.com/wh131462/file-preview/issues"
   },
   "license": "MIT",
   "publishConfig": {
@@ -71,6 +71,7 @@
   "dependencies": {
     "@eternalheart/file-preview-core": "workspace:*",
     "@kenjiuno/msgreader": "^1.28.0",
+    "@likecoin/epub-ts": "^0.6.0",
     "exceljs": "^4.4.0",
     "lucide-vue-next": "^0.460.0",
     "mammoth": "^1.8.0",

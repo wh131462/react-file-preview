@@ -117,6 +117,9 @@ importers:
       '@kenjiuno/msgreader':
         specifier: ^1.28.0
         version: 1.28.0
+      '@likecoin/epub-ts':
+        specifier: ^0.6.0
+        version: 0.6.0
       '@types/react-syntax-highlighter':
         specifier: ^15.5.13
         version: 15.5.13
@@ -254,6 +257,9 @@ importers:
       '@kenjiuno/msgreader':
         specifier: ^1.28.0
         version: 1.28.0
+      '@likecoin/epub-ts':
+        specifier: ^0.6.0
+        version: 0.6.0
       exceljs:
         specifier: ^4.4.0
         version: 4.4.0
@@ -737,6 +743,14 @@ packages:
   '@kenjiuno/msgreader@1.28.0':
     resolution: {integrity: sha512-+iv2rWCGRHmX/3sBwXZzkThEuuywGJjnYsvxj6Kp1L/FDMICQcFrtqN+6MFrnh2d+umtfGtX904wxaYEDZ52MQ==}
     engines: {node: '>= 10'}
+
+  '@likecoin/epub-ts@0.6.0':
+    resolution: {integrity: sha512-/Aj8Jy+TPFVfXywywQ6MM49wi48eV8OmN9ErbY5/sfO3GTQNLHKIqesoWyhjREDYy+5CeKZkNd+iQ+KFDbiaoQ==}
+    peerDependencies:
+      linkedom: '>=0.16.0'
+    peerDependenciesMeta:
+      linkedom:
+        optional: true
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -3561,6 +3575,10 @@ snapshots:
     dependencies:
       '@kenjiuno/decompressrtf': 0.1.4
       iconv-lite: 0.6.3
+
+  '@likecoin/epub-ts@0.6.0':
+    dependencies:
+      jszip: 3.10.1
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:

@@ -26,6 +26,7 @@ export type FileType =
   | 'xlsx'
   | 'pptx'
   | 'msg'
+  | 'epub'
   | 'video'
   | 'audio'
   | 'markdown'
