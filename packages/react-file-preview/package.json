@@ -73,7 +73,6 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@eternalheart/file-preview-core": "workspace:*",
     "@kenjiuno/msgreader": "^1.28.0",
     "@likecoin/epub-ts": "^0.6.0",
     "@types/react-syntax-highlighter": "^15.5.13",
@@ -105,6 +104,7 @@
     "typescript": "^5.6.3",
     "vite": "^5.4.11",
     "vite-plugin-static-copy": "^3.1.4",
-    "x-data-spreadsheet": "^1.1.9"
+    "x-data-spreadsheet": "^1.1.9",
+    "@eternalheart/file-preview-core": "workspace:*"
   }
 }

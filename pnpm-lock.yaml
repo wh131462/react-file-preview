@@ -111,9 +111,6 @@ importers:
 
   packages/react-file-preview:
     dependencies:
-      '@eternalheart/file-preview-core':
-        specifier: workspace:*
-        version: link:../file-preview-core
       '@kenjiuno/msgreader':
         specifier: ^1.28.0
         version: 1.28.0
@@ -163,6 +160,9 @@ importers:
         specifier: ^8.23.4
         version: 8.23.4
     devDependencies:
+      '@eternalheart/file-preview-core':
+        specifier: workspace:*
+        version: link:../file-preview-core
       '@types/node':
         specifier: ^24.10.1
         version: 24.10.1
@@ -251,9 +251,6 @@ importers:
 
   packages/vue-file-preview:
     dependencies:
-      '@eternalheart/file-preview-core':
-        specifier: workspace:*
-        version: link:../file-preview-core
       '@kenjiuno/msgreader':
         specifier: ^1.28.0
         version: 1.28.0
@@ -288,6 +285,9 @@ importers:
         specifier: ^1.1.9
         version: 1.1.9
     devDependencies:
+      '@eternalheart/file-preview-core':
+        specifier: workspace:*
+        version: link:../file-preview-core
       '@types/markdown-it':
         specifier: ^14.1.2
         version: 14.1.2

@@ -69,7 +69,6 @@
     "vue": "^3.4.0"
   },
   "dependencies": {
-    "@eternalheart/file-preview-core": "workspace:*",
     "@kenjiuno/msgreader": "^1.28.0",
     "@likecoin/epub-ts": "^0.6.0",
     "exceljs": "^4.4.0",
@@ -94,6 +93,7 @@
     "vite": "^5.4.11",
     "vite-plugin-static-copy": "^3.1.4",
     "vue": "^3.5.13",
-    "vue-tsc": "^2.1.10"
+    "vue-tsc": "^2.1.10",
+    "@eternalheart/file-preview-core": "workspace:*"
   }
 }
