@@ -1,6 +1,6 @@
-import { useState, useRef, useMemo, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { FilePreviewModal, FilePreviewEmbed, VERSION } from '@eternalheart/react-file-preview';
-import type { PreviewFile, PreviewFileInput, CustomRenderer } from '@eternalheart/react-file-preview';
+import type { PreviewFile, PreviewFileInput } from '@eternalheart/react-file-preview';
 import '@eternalheart/react-file-preview/style.css';
 import { FileText, Image, FileSpreadsheet, Video, Music, Upload, X, Package, BookOpen, Code } from 'lucide-react';
 import iconSvg from './assets/icon.svg';
@@ -13,27 +13,6 @@ const DOCS_URL = isDev
 const VUE_EXAMPLE_URL = isDev
   ? 'http://localhost:4802/'
   : 'https://wh131462.github.io/file-preview/vue/';
-
-// JSON 查看器组件
-function JsonViewer({ url }: { url: string }) {
-  const [content, setContent] = useState<string>('加载中...');
-
-  useEffect(() => {
-    fetch(url)
-      .then(res => res.text())
-      .then(text => {
-        try {
-          const json = JSON.parse(text);
-          setContent(JSON.stringify(json, null, 2));
-        } catch {
-          setContent(text);
-        }
-      })
-      .catch(err => setContent(`加载失败: ${err.message}`));
-  }, [url]);
-
-  return <>{content}</>;
-}
 
 function App() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -170,7 +149,7 @@ function App() {
                 href="https://github.com/wh131462/file-preview"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/15 text-white transition-all hover:scale-105"
+                className="hidden sm:flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/15 text-white transition-all hover:scale-105"
               >
                 <Code className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline">GitHub</span>
@@ -179,7 +158,7 @@ function App() {
                 href="https://www.npmjs.com/package/@eternalheart/react-file-preview"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/15 text-white transition-all hover:scale-105"
+                className="hidden sm:flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/15 text-white transition-all hover:scale-105"
               >
                 <Package className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline">npm</span>
@@ -188,7 +167,7 @@ function App() {
                 href={DOCS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white transition-all hover:scale-105 hover:shadow-lg active:scale-95"
+                className="hidden sm:flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white transition-all hover:scale-105 hover:shadow-lg active:scale-95"
               >
                 <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline">API Docs</span>
@@ -345,7 +324,7 @@ function App() {
           </p>
           <p className="flex flex-wrap items-center justify-center gap-1">
             <a
-              href="https://github.com/wh131462/file-preview/blob/main/LICENSE"
+              href="https://github.com/wh131462/file-preview/blob/master/LICENSE"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-gray-400 transition-colors"
@@ -370,6 +349,15 @@ function App() {
             >
               npm
             </a>
+            <span>{' '} · {' '}</span>
+            <a
+              href={DOCS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-gray-400 transition-colors"
+            >
+              API Docs
+            </a>
           </p>
         </div>
       </footer>
@@ -380,26 +368,6 @@ function App() {
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
         onNavigate={setCurrentFileIndex}
-        customRenderers={useMemo<CustomRenderer[]>(() => [
-          // 自定义 JSON 渲染器示例
-          {
-            test: (file: PreviewFile) => file.name.endsWith('.json'),
-            render: (file: PreviewFile) => (
-              <div className="w-full h-full flex items-center justify-center p-8">
-                <div className="bg-gray-900 rounded-lg p-6 max-w-4xl w-full max-h-full overflow-auto">
-                  <div className="flex items-center gap-2 mb-4 text-blue-400">
-                    <Code className="w-5 h-5" />
-                    <h3 className="font-semibold">JSON 文件预览</h3>
-                  </div>
-                  <pre className="text-sm text-gray-300 whitespace-pre-wrap break-words">
-                    {/* 这里会异步加载 JSON 内容 */}
-                    <JsonViewer url={file.url} />
-                  </pre>
-                </div>
-              </div>
-            ),
-          },
-        ], [])}
       />
     </div>
   );

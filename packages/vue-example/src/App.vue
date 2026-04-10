@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import {
   FilePreviewModal,
   FilePreviewEmbed,
   VERSION,
   type PreviewFile,
   type PreviewFileInput,
-  type CustomRenderer,
 } from '@eternalheart/vue-file-preview';
 import '@eternalheart/vue-file-preview/style.css';
 import {
@@ -22,7 +21,6 @@ import {
   Code,
 } from 'lucide-vue-next';
 import iconSvg from './assets/icon.svg';
-import JsonViewer from './components/JsonViewer.vue';
 
 // 环境检测
 const isDev = import.meta.env.DEV;
@@ -40,14 +38,6 @@ const uploadedFiles = ref<PreviewFile[]>([]);
 const allFiles = ref<PreviewFileInput[]>([]);
 const isDragging = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
-
-// 自定义渲染器：用 markRaw 避免 Vue 把组件做响应式包装
-const customRenderers = computed<CustomRenderer[]>(() => [
-  {
-    test: (file: PreviewFile) => file.name.endsWith('.json'),
-    render: (_file: PreviewFile) => JsonViewer,
-  },
-]);
 
 const getFileIcon = (type: string) => {
   if (type.startsWith('image/')) return ImageIcon;
@@ -173,7 +163,7 @@ onUnmounted(() => {
               href="https://github.com/wh131462/file-preview"
               target="_blank"
               rel="noopener noreferrer"
-              class="flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/15 text-white transition-all hover:scale-105"
+              class="hidden sm:flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/15 text-white transition-all hover:scale-105"
             >
               <Code class="w-4 h-4 sm:w-5 sm:h-5" />
               <span class="hidden sm:inline">GitHub</span>
@@ -182,7 +172,7 @@ onUnmounted(() => {
               href="https://www.npmjs.com/package/@eternalheart/vue-file-preview"
               target="_blank"
               rel="noopener noreferrer"
-              class="flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/15 text-white transition-all hover:scale-105"
+              class="hidden sm:flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/15 text-white transition-all hover:scale-105"
             >
               <Package class="w-4 h-4 sm:w-5 sm:h-5" />
               <span class="hidden sm:inline">npm</span>
@@ -191,7 +181,7 @@ onUnmounted(() => {
               :href="DOCS_URL"
               target="_blank"
               rel="noopener noreferrer"
-              class="flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white transition-all hover:scale-105 hover:shadow-lg active:scale-95"
+              class="hidden sm:flex items-center gap-2 px-2.5 py-2 sm:px-4 sm:py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white transition-all hover:scale-105 hover:shadow-lg active:scale-95"
             >
               <BookOpen class="w-4 h-4 sm:w-5 sm:h-5" />
               <span class="hidden sm:inline">API Docs</span>
@@ -332,7 +322,7 @@ onUnmounted(() => {
         </p>
         <p class="flex flex-wrap items-center justify-center gap-1">
           <a
-            href="https://github.com/wh131462/file-preview/blob/main/LICENSE"
+            href="https://github.com/wh131462/file-preview/blob/master/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
             class="text-gray-500 hover:text-gray-400 transition-colors"
@@ -357,6 +347,15 @@ onUnmounted(() => {
           >
             npm
           </a>
+          <span> · </span>
+          <a
+            :href="DOCS_URL"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-gray-500 hover:text-gray-400 transition-colors"
+          >
+            API Docs
+          </a>
         </p>
       </div>
     </footer>
@@ -365,7 +364,6 @@ onUnmounted(() => {
       :files="allFiles"
       :current-index="currentFileIndex"
       :is-open="isPreviewOpen"
-      :custom-renderers="customRenderers"
       @close="isPreviewOpen = false"
       @navigate="(i: number) => (currentFileIndex = i)"
     />

@@ -30,6 +30,7 @@ export type FileType =
   | 'video'
   | 'audio'
   | 'markdown'
+  | 'json'
   | 'text'
   | 'unsupported';
 

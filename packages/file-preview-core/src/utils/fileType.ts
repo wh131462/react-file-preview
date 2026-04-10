@@ -37,9 +37,12 @@ export function getFileType(file: PreviewFile): FileType {
   if (ext === 'md' || ext === 'markdown') {
     return 'markdown';
   }
+  if (mimeType === 'application/json' || ext === 'json') {
+    return 'json';
+  }
   const textExtensions = [
     'txt', 'log', 'csv',
-    'js', 'jsx', 'ts', 'tsx', 'json',
+    'js', 'jsx', 'ts', 'tsx',
     'py', 'java', 'cpp', 'c', 'h', 'cs', 'php', 'rb', 'go', 'rs', 'swift', 'kt',
     'html', 'css', 'scss', 'sass', 'less',
     'xml', 'yaml', 'yml', 'toml', 'ini', 'conf',
