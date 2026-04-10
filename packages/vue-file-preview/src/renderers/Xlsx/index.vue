@@ -3,6 +3,7 @@ import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { FileSpreadsheet } from 'lucide-vue-next';
 import ExcelJS from 'exceljs';
 import Spreadsheet from 'x-data-spreadsheet';
+import 'x-data-spreadsheet/dist/xspreadsheet.css';
 import { convertWorkbookToSpreadsheetData } from '@eternalheart/file-preview-core';
 
 const props = defineProps<{

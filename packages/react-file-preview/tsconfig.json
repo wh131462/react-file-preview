@@ -29,6 +29,7 @@
   },
   "include": [
     "src/index.ts",
+    "src/css.d.ts",
     "src/FilePreviewModal.tsx",
     "src/types.ts",
     "src/utils/fileNormalizer.ts",

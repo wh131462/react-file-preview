@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Document, Page } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 // 导入 PDF.js 配置
 import '../../utils/pdfConfig';
@@ -130,8 +128,8 @@ export const PdfRenderer: React.FC<PdfRendererProps> = ({
                         <div className="rfp-w-8 rfp-h-8 rfp-border-4 rfp-border-white/20 rfp-border-t-white rfp-rounded-full rfp-animate-spin" />
                       </div>
                     }
-                    renderTextLayer={true}
-                    renderAnnotationLayer={true}
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
                     className="rfp-shadow-2xl"
                     onRenderSuccess={(page) => {
                       if (pageNumber === 1 && onPageWidthChange) {

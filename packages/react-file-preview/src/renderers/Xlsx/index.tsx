@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { FileSpreadsheet } from 'lucide-react';
 import ExcelJS from 'exceljs';
 import Spreadsheet from 'x-data-spreadsheet';
+import 'x-data-spreadsheet/dist/xspreadsheet.css';
 import { convertWorkbookToSpreadsheetData } from '../../utils/excelDataConverter';
 
 interface XlsxRendererProps {
