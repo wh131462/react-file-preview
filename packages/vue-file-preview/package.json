@@ -71,7 +71,6 @@
   "dependencies": {
     "@kenjiuno/msgreader": "^1.28.0",
     "@likecoin/epub-ts": "^0.6.0",
-    "exceljs": "^4.4.0",
     "lucide-vue-next": "^0.460.0",
     "mammoth": "^1.8.0",
     "markdown-it": "^14.1.0",
@@ -86,6 +85,7 @@
     "@types/node": "^24.10.1",
     "@vitejs/plugin-vue": "^5.2.1",
     "autoprefixer": "^10.4.20",
+    "exceljs": "^4.4.0",
     "postcss": "^8.4.49",
     "postcss-prefix-selector": "^2.1.1",
     "tailwindcss": "^3.4.18",

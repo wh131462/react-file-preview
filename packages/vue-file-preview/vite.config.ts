@@ -38,7 +38,6 @@ export default defineConfig({
         'vue',
         '@kenjiuno/msgreader',
         '@likecoin/epub-ts',
-        'exceljs',
         'lucide-vue-next',
         'mammoth',
         'markdown-it',

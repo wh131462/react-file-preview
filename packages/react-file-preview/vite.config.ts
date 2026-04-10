@@ -48,7 +48,6 @@ export default defineConfig({
         'mammoth',
         'docx-preview',
         'pptx-preview',
-        'exceljs',
         'react-markdown',
         'remark-gfm',
         'react-syntax-highlighter',
