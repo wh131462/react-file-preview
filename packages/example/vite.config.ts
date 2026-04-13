@@ -33,6 +33,9 @@ export default defineConfig({
       // 指向库构建产物，配合 vite build --watch 实现热更新
       '@eternalheart/react-file-preview/style.css': resolve(__dirname, '../react-file-preview/lib/index.css'),
       '@eternalheart/react-file-preview': resolve(__dirname, '../react-file-preview/lib/index.mjs'),
+      // iconv-lite(msgreader 的依赖) 会尝试 require('stream') 并访问 stream.Transform
+      // Vite 在浏览器中会把内置 `stream` externalize 后触发警告。此处给一个空 stub 即可
+      stream: resolve(__dirname, 'src/shims/stream-stub.ts'),
     },
   },
   optimizeDeps: {

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@eternalheart/react-file-preview": "workspace:*",
+    "foliate-js": "1.0.1",
     "lucide-react": "^0.460.0",
     "pdfjs-dist": "4.8.69",
     "react": "^18.3.1",
