@@ -2,6 +2,7 @@
 import { ref, watch, onBeforeUnmount, defineComponent, h, type PropType } from 'vue';
 import { X } from 'lucide-vue-next';
 import 'foliate-js/view.js';
+import { useTranslator } from '../../composables/useTranslator';
 
 interface TocItem {
   label: string;
@@ -58,6 +59,8 @@ const emit = defineEmits<{
   (e: 'chapterChange', current: number, total: number): void;
   (e: 'fullWidthChange', isFullWidth: boolean): void;
 }>();
+
+const { t } = useTranslator();
 
 const hostRef = ref<HTMLDivElement | null>(null);
 let viewInstance: FoliateView | null = null;
@@ -156,7 +159,7 @@ const load = async () => {
     reportProgress(0, view.book?.sections.length ?? 1);
   } catch (err) {
     console.error('MOBI/AZW3 加载错误:', err);
-    error.value = '电子书加载失败，文件可能已损坏或带有 DRM 保护';
+    error.value = t.value('mobi.load_failed');
     loading.value = false;
   }
 };
@@ -199,7 +202,7 @@ onBeforeUnmount(() => {
         :style="{ transform: showToc ? 'translateX(0)' : 'translateX(-100%)' }"
       >
         <div class="vfp-flex vfp-items-center vfp-justify-between vfp-px-4 vfp-py-3 vfp-border-b vfp-border-white/10 vfp-flex-shrink-0">
-          <span class="vfp-text-white vfp-font-medium vfp-text-sm">目录</span>
+          <span class="vfp-text-white vfp-font-medium vfp-text-sm">{{ t('toolbar.toc') }}</span>
           <button class="toc-close-btn" @click="showToc = false">
             <X class="vfp-w-4 vfp-h-4" />
           </button>

@@ -3,12 +3,15 @@ import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import { getVideoMimeType } from '@eternalheart/file-preview-core';
+import { useTranslator } from '../../composables/useTranslator';
 
 type VideoJsPlayer = ReturnType<typeof videojs>;
 
 const props = defineProps<{
   url: string;
 }>();
+
+const { t } = useTranslator();
 
 const error = ref<string | null>(null);
 const isLoading = ref(true);
@@ -74,7 +77,7 @@ const initPlayer = () => {
   player.on('error', () => {
     const err = player?.error();
     console.error('Video.js error:', err);
-    error.value = `视频加载失败: ${err?.message || '未知错误'}`;
+    error.value = t.value('video.load_failed_with_error', { error: err?.message || t.value('common.unknown_error') });
     isLoading.value = false;
   });
 };
@@ -118,7 +121,7 @@ onBeforeUnmount(() => {
           />
         </svg>
       </div>
-      <p class="vfp-text-lg vfp-font-medium vfp-text-white/90 vfp-mb-2">视频加载失败</p>
+      <p class="vfp-text-lg vfp-font-medium vfp-text-white/90 vfp-mb-2">{{ t('video.load_failed') }}</p>
       <p class="vfp-text-sm vfp-text-white/60">{{ error }}</p>
     </div>
   </div>
@@ -133,7 +136,7 @@ onBeforeUnmount(() => {
           <div
             class="vfp-w-12 vfp-h-12 vfp-mx-auto vfp-mb-3 vfp-border-4 vfp-border-white/20 vfp-border-t-white vfp-rounded-full vfp-animate-spin"
           />
-          <p class="vfp-text-sm vfp-text-white/70 vfp-font-medium">加载视频中...</p>
+          <p class="vfp-text-sm vfp-text-white/70 vfp-font-medium">{{ t('video.loading') }}</p>
         </div>
       </div>
 

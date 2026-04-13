@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { FileQuestion, Download } from 'lucide-vue-next';
+import { useTranslator } from '../../composables/useTranslator';
 
 defineProps<{
   fileName: string;
   fileType: string;
 }>();
+
+const { t } = useTranslator();
 
 const emit = defineEmits<{
   (e: 'download'): void;
@@ -23,7 +26,7 @@ const emit = defineEmits<{
 
     <div class="vfp-text-white vfp-text-center">
       <p class="vfp-text-xl vfp-font-medium vfp-mb-2">{{ fileName }}</p>
-      <p class="vfp-text-white/70">不支持预览此文件类型 ({{ fileType }})</p>
+      <p class="vfp-text-white/70">{{ t('common.unsupported_preview', { type: fileType }) }}</p>
     </div>
 
     <button
@@ -31,7 +34,7 @@ const emit = defineEmits<{
       @click="emit('download')"
     >
       <Download class="vfp-w-5 vfp-h-5" />
-      下载文件查看
+      {{ t('common.download') }}
     </button>
   </div>
 </template>

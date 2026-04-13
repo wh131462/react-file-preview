@@ -1,6 +1,7 @@
 import { ZoomIn, ZoomOut, RotateCw, RotateCcw, Scan, RefreshCw } from 'lucide-vue-next';
 import { h, type FunctionalComponent } from 'vue';
 import type { ToolbarGroup } from '../toolbar.types';
+import type { Translator } from '@eternalheart/file-preview-core';
 
 const OriginalSizeIcon: FunctionalComponent = (_props, { attrs }) => {
   return h('svg', {
@@ -25,32 +26,33 @@ export interface ImageToolbarContext {
   onRotateLeft: () => void;
   onRotateRight: () => void;
   onReset: () => void;
+  t: Translator;
 }
 
 export function getImageToolbarGroups(ctx: ImageToolbarContext): ToolbarGroup[] {
   return [
     {
       items: [
-        { type: 'button', icon: ZoomOut, tooltip: '缩小', action: ctx.onZoomOut, disabled: ctx.zoom <= 0.01 },
+        { type: 'button', icon: ZoomOut, tooltip: ctx.t('toolbar.zoom_out'), action: ctx.onZoomOut, disabled: ctx.zoom <= 0.01 },
         { type: 'text', content: `${Math.round(ctx.zoom * 100)}%`, minWidth: '3rem' },
-        { type: 'button', icon: ZoomIn, tooltip: '放大', action: ctx.onZoomIn, disabled: ctx.zoom >= 10 },
+        { type: 'button', icon: ZoomIn, tooltip: ctx.t('toolbar.zoom_in'), action: ctx.onZoomIn, disabled: ctx.zoom >= 10 },
       ],
     },
     {
       items: [
-        { type: 'button', icon: Scan, tooltip: '适应窗口', action: ctx.onFitToWidth },
-        { type: 'button', icon: OriginalSizeIcon, tooltip: '原始尺寸', action: ctx.onOriginalSize },
+        { type: 'button', icon: Scan, tooltip: ctx.t('toolbar.fit_to_window'), action: ctx.onFitToWidth },
+        { type: 'button', icon: OriginalSizeIcon, tooltip: ctx.t('toolbar.original_size'), action: ctx.onOriginalSize },
       ],
     },
     {
       items: [
-        { type: 'button', icon: RotateCcw, tooltip: '向左旋转', action: ctx.onRotateLeft },
-        { type: 'button', icon: RotateCw, tooltip: '向右旋转', action: ctx.onRotateRight },
+        { type: 'button', icon: RotateCcw, tooltip: ctx.t('toolbar.rotate_left'), action: ctx.onRotateLeft },
+        { type: 'button', icon: RotateCw, tooltip: ctx.t('toolbar.rotate_right'), action: ctx.onRotateRight },
       ],
     },
     {
       items: [
-        { type: 'button', icon: RefreshCw, tooltip: '复原', action: ctx.onReset },
+        { type: 'button', icon: RefreshCw, tooltip: ctx.t('toolbar.reset'), action: ctx.onReset },
       ],
     },
   ];

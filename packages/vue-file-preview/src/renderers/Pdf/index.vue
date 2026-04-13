@@ -3,6 +3,7 @@ import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { configurePdfWorker } from '@eternalheart/file-preview-core';
 // @ts-ignore - pdfjs-dist 类型路径
 import * as pdfjsLib from 'pdfjs-dist/build/pdf.mjs';
+import { useTranslator } from '../../composables/useTranslator';
 
 // 在模块加载时配置 PDF.js worker（默认走 CDN）
 configurePdfWorker(pdfjsLib);
@@ -31,6 +32,8 @@ const emit = defineEmits<{
   (e: 'totalPagesChange', total: number): void;
   (e: 'pageWidthChange', width: number): void;
 }>();
+
+const { t } = useTranslator();
 
 const numPages = ref(0);
 const error = ref<string | null>(null);
@@ -113,7 +116,7 @@ const loadPdf = async () => {
     await renderAll();
   } catch (err) {
     console.error('PDF 加载错误:', err);
-    error.value = 'PDF 文件加载失败';
+    error.value = t.value('pdf.load_failed');
   }
 };
 

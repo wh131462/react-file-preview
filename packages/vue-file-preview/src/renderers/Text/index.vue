@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue';
 import { getLanguageFromFileName, fetchTextUtf8 } from '@eternalheart/file-preview-core';
 import { codeToHtml } from 'shiki';
+import { useTranslator } from '../../composables/useTranslator';
 
 const props = withDefaults(defineProps<{
   url: string;
@@ -12,6 +13,8 @@ const props = withDefaults(defineProps<{
   wordWrap: true,
   htmlPreview: false,
 });
+
+const { t } = useTranslator();
 
 const content = ref<string>('');
 const highlighted = ref<string>('');
@@ -41,7 +44,7 @@ const loadText = async () => {
     }
   } catch (err) {
     console.error(err);
-    error.value = '文本文件加载失败';
+    error.value = t.value('text.load_failed');
   } finally {
     loading.value = false;
   }

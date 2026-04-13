@@ -3,11 +3,14 @@ import { ref, watch } from 'vue';
 import { Code } from 'lucide-vue-next';
 import { fetchTextUtf8 } from '@eternalheart/file-preview-core';
 import { codeToHtml } from 'shiki';
+import { useTranslator } from '../../composables/useTranslator';
 
 const props = defineProps<{
   url: string;
   fileName: string;
 }>();
+
+const { t } = useTranslator();
 
 const content = ref<string>('');
 const highlighted = ref<string>('');
@@ -64,7 +67,7 @@ const load = async () => {
     }
   } catch (err) {
     console.error(err);
-    error.value = 'XML 文件加载失败';
+    error.value = t.value('xml.load_failed');
   } finally {
     loading.value = false;
   }

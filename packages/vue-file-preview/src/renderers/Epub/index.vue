@@ -2,6 +2,7 @@
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import ePub from '@likecoin/epub-ts';
 import { X } from 'lucide-vue-next';
+import { useTranslator } from '../../composables/useTranslator';
 
 interface TocItem {
   label: string;
@@ -38,6 +39,8 @@ interface BookLike {
 const A4_WIDTH = 794;
 
 const props = defineProps<{ url: string }>();
+
+const { t } = useTranslator();
 
 const emit = defineEmits<{
   (e: 'chapterChange', current: number, total: number): void;
@@ -195,7 +198,7 @@ const loadEpub = async () => {
     });
   } catch (err) {
     console.error('EPUB 加载错误:', err);
-    error.value = 'EPUB 文件加载失败';
+    error.value = t.value('epub.load_failed');
     loading.value = false;
   }
 };
@@ -283,7 +286,7 @@ onBeforeUnmount(() => {
         }"
       >
         <div class="vfp-flex vfp-items-center vfp-justify-between vfp-flex-shrink-0" style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.1)">
-          <span style="color: white; font-weight: 500; font-size: 14px">目录</span>
+          <span style="color: white; font-weight: 500; font-size: 14px">{{ t('toolbar.toc') }}</span>
           <button style="color: rgba(255,255,255,0.6); background: none; border: none; cursor: pointer; padding: 4px" @click="showToc = false">
             <X style="width: 16px; height: 16px" />
           </button>

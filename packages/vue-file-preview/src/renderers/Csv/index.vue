@@ -2,11 +2,14 @@
 import { ref, computed, watch } from 'vue';
 import { FileSpreadsheet } from 'lucide-vue-next';
 import { parseCsv, guessCsvDelimiter, fetchTextUtf8, type CsvParseResult } from '@eternalheart/file-preview-core';
+import { useTranslator } from '../../composables/useTranslator';
 
 const props = defineProps<{
   url: string;
   fileName: string;
 }>();
+
+const { t } = useTranslator();
 
 const text = ref<string>('');
 const loading = ref(true);
@@ -19,7 +22,7 @@ const load = async () => {
     text.value = await fetchTextUtf8(props.url);
   } catch (err) {
     console.error(err);
-    error.value = 'CSV 文件加载失败';
+    error.value = t.value('csv.load_failed');
   } finally {
     loading.value = false;
   }
@@ -56,7 +59,7 @@ const hasHeader = computed(() => !!parsed.value?.header.length);
     class="vfp-flex vfp-items-center vfp-justify-center vfp-w-full vfp-h-full"
   >
     <div class="vfp-text-white/70 vfp-text-center">
-      <p class="vfp-text-lg">{{ error || 'CSV 解析失败' }}</p>
+      <p class="vfp-text-lg">{{ error || t('csv.parse_failed') }}</p>
     </div>
   </div>
 

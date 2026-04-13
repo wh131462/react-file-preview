@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue';
-import type { PreviewFileInput } from '@eternalheart/file-preview-core';
+import type { PreviewFileInput, Locale, Messages } from '@eternalheart/file-preview-core';
 import type { CustomRenderer } from './types';
 import FilePreviewContent from './FilePreviewContent.vue';
 
@@ -12,6 +12,10 @@ interface Props {
   width?: number | string;
   /** 高度,默认 100% 填充父容器 */
   height?: number | string;
+  /** 语言 */
+  locale?: Locale;
+  /** 自定义翻译字典 */
+  messages?: Partial<Record<Locale, Partial<Messages>>>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -19,6 +23,8 @@ const props = withDefaults(defineProps<Props>(), {
   customRenderers: () => [],
   width: '100%',
   height: '100%',
+  locale: undefined,
+  messages: undefined,
 });
 
 const emit = defineEmits<{
@@ -39,6 +45,8 @@ const wrapperStyle: CSSProperties = {
         :files="files"
         :current-index="currentIndex"
         :custom-renderers="customRenderers"
+        :locale="locale"
+        :messages="messages"
         @navigate="(i) => emit('navigate', i)"
       />
     </div>

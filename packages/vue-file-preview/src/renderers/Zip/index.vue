@@ -12,6 +12,7 @@ import {
 import ResizableSplit from '../../components/ResizableSplit.vue';
 import TreeItem from './TreeItem.vue';
 import type { ZipToolbarStats } from './toolbar';
+import { useTranslator } from '../../composables/useTranslator';
 
 // 懒加载 FilePreviewContent 以打破循环依赖
 const LazyFilePreviewContent = defineAsyncComponent(
@@ -29,6 +30,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   (e: 'statsChange', stats: ZipToolbarStats | null): void;
 }>();
+
+const { t } = useTranslator();
 
 interface SelectedPreview {
   path: string;
@@ -76,7 +79,7 @@ const load = async () => {
     expanded.value = init;
   } catch (err) {
     console.error(err);
-    error.value = 'ZIP 文件加载失败';
+    error.value = t.value('zip.load_failed');
   } finally {
     loading.value = false;
   }
@@ -143,7 +146,7 @@ const previewFiles = computed(() => {
   </div>
 
   <div v-else-if="error || !tree" class="vfp-flex vfp-items-center vfp-justify-center vfp-w-full vfp-h-full">
-    <div class="vfp-text-white/70 vfp-text-center"><p class="vfp-text-lg">{{ error || 'ZIP 解析失败' }}</p></div>
+    <div class="vfp-text-white/70 vfp-text-center"><p class="vfp-text-lg">{{ error || t('zip.parse_failed') }}</p></div>
   </div>
 
   <template v-else>

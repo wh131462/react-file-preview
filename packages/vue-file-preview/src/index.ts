@@ -32,3 +32,8 @@ export {
 } from '@eternalheart/file-preview-core';
 
 export type { PdfWorkerOptions } from '@eternalheart/file-preview-core';
+
+// 导出 i18n 相关
+export { useTranslator, provideLocale } from './composables/useTranslator';
+export { LOCALE_KEY } from './i18n/localeKey';
+export type { Locale, Messages, Translator } from '@eternalheart/file-preview-core';

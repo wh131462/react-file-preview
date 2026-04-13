@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { fetchTextUtf8 } from '@eternalheart/file-preview-core';
+import { useTranslator } from '../../composables/useTranslator';
 
 const props = defineProps<{
   url: string;
   fileName: string;
 }>();
+
+const { t } = useTranslator();
 
 const data = ref<unknown>(null);
 const loading = ref(true);
@@ -19,7 +22,7 @@ const loadJson = async () => {
     data.value = JSON.parse(text);
   } catch (err) {
     console.error(err);
-    error.value = 'JSON 文件加载失败';
+    error.value = t.value('json.load_failed');
   } finally {
     loading.value = false;
   }
@@ -46,8 +49,10 @@ watch(() => props.url, loadJson, { immediate: true });
 
 <!-- 递归 JSON 节点组件 -->
 <script lang="ts">
-import { defineComponent, h, type PropType } from 'vue';
+import { defineComponent, h, inject, computed, type PropType } from 'vue';
 import { ChevronRight, ChevronDown } from 'lucide-vue-next';
+import { createTranslator, type Translator } from '@eternalheart/file-preview-core';
+import { LOCALE_KEY } from '../../i18n/localeKey';
 
 export default defineComponent({ name: 'JsonRenderer' });
 
@@ -86,10 +91,12 @@ const JsonNode = defineComponent({
   setup(props) {
     const expanded = ref(props.defaultExpanded);
     const toggle = () => { expanded.value = !expanded.value; };
-    return { expanded, toggle };
+    const injected = inject(LOCALE_KEY, null);
+    const tFunc = computed<Translator>(() => injected?.t.value ?? createTranslator({ locale: 'zh-CN' }));
+    return { expanded, toggle, tFunc };
   },
   render() {
-    const { keyName, value, depth, expanded, toggle } = this;
+    const { keyName, value, depth, expanded, toggle, tFunc } = this;
     const indent = depth * 20;
 
     // 基本类型
@@ -129,7 +136,7 @@ const JsonNode = defineComponent({
         h('span', { class: 'json-bracket' }, open),
         !expanded
           ? h('span', { class: 'json-collapsed' }, [
-              isArr ? `${count} items` : `${count} keys`,
+              isArr ? `${count} ${tFunc('json.items')}` : `${count} ${tFunc('json.keys')}`,
               h('span', { class: 'json-bracket' }, ` ${close}`),
             ])
           : null,

@@ -5,10 +5,13 @@ import ExcelJS from 'exceljs';
 import Spreadsheet from 'x-data-spreadsheet';
 import 'x-data-spreadsheet/dist/xspreadsheet.css';
 import { convertWorkbookToSpreadsheetData } from '@eternalheart/file-preview-core';
+import { useTranslator } from '../../composables/useTranslator';
 
 const props = defineProps<{
   url: string;
 }>();
+
+const { t } = useTranslator();
 
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -73,7 +76,7 @@ const loadExcel = async () => {
     });
 
     if (!response.ok) {
-      if (response.status === 404) throw new Error('Excel 文件不存在');
+      if (response.status === 404) throw new Error(t.value('xlsx.not_found'));
       if (response.status === 403) throw new Error('无权限访问此文件');
       throw new Error(`文件加载失败 (${response.status})`);
     }
@@ -93,7 +96,7 @@ const loadExcel = async () => {
     loading.value = false;
   } catch (err) {
     console.error('Excel 解析错误:', err);
-    let errorMsg = 'Excel 文件解析失败';
+    let errorMsg = t.value('xlsx.parse_failed');
     if (err instanceof Error) errorMsg = err.message;
     error.value = errorMsg;
     loading.value = false;
@@ -159,7 +162,7 @@ onBeforeUnmount(() => {
         <div
           class="vfp-w-10 vfp-h-10 md:vfp-w-12 md:vfp-h-12 vfp-mx-auto vfp-mb-3 vfp-border-4 vfp-border-white/20 vfp-border-t-white vfp-rounded-full vfp-animate-spin"
         />
-        <p class="vfp-text-xs md:vfp-text-sm vfp-text-white/70 vfp-font-medium">加载 Excel 中...</p>
+        <p class="vfp-text-xs md:vfp-text-sm vfp-text-white/70 vfp-font-medium">{{ t('xlsx.loading') }}</p>
       </div>
     </div>
 
@@ -174,7 +177,7 @@ onBeforeUnmount(() => {
           <FileSpreadsheet class="vfp-w-12 vfp-h-12 md:vfp-w-16 md:vfp-h-16 vfp-text-white" />
         </div>
         <p class="vfp-text-lg md:vfp-text-xl vfp-text-white/90 vfp-mb-2 md:vfp-mb-3 vfp-font-medium">
-          Excel 加载失败
+          {{ t('xlsx.load_failed') }}
         </p>
         <p class="vfp-text-xs md:vfp-text-sm vfp-text-white/60 vfp-mb-4 md:vfp-mb-6">{{ error }}</p>
         <a

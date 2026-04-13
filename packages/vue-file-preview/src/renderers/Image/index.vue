@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { formatFileSize } from '@eternalheart/file-preview-core';
+import { useTranslator } from '../../composables/useTranslator';
 
 const props = defineProps<{
   url: string;
@@ -15,6 +16,8 @@ const emit = defineEmits<{
   (e: 'naturalWidthChange', width: number): void;
   (e: 'naturalHeightChange', height: number): void;
 }>();
+
+const { t } = useTranslator();
 
 const loaded = ref(false);
 const error = ref<string | null>(null);
@@ -79,7 +82,7 @@ const handleLoad = (e: Event) => {
 };
 
 const handleError = () => {
-  error.value = '图片加载失败';
+  error.value = t.value('image.load_failed');
   loaded.value = true;
 };
 

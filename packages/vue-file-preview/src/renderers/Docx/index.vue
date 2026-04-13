@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue';
 import mammoth from 'mammoth';
+import { useTranslator } from '../../composables/useTranslator';
 
 const PAGE_HEIGHT = 1123;
 const PAGE_PADDING_Y = 60;
@@ -11,6 +12,8 @@ const PAGE_GAP = 24;
 const props = defineProps<{
   url: string;
 }>();
+
+const { t } = useTranslator();
 
 const html = ref('');
 const loading = ref(true);
@@ -32,7 +35,7 @@ const loadDocx = async () => {
     html.value = result.value;
   } catch (err) {
     console.error('Docx 解析错误:', err);
-    error.value = 'Word 文档解析失败';
+    error.value = t.value('docx.parse_failed');
   } finally {
     loading.value = false;
   }

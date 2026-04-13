@@ -2,6 +2,7 @@
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { Presentation } from 'lucide-vue-next';
 import { init } from 'pptx-preview';
+import { useTranslator } from '../../composables/useTranslator';
 
 const props = withDefaults(
   defineProps<{
@@ -10,6 +11,8 @@ const props = withDefaults(
   }>(),
   { tiled: true }
 );
+
+const { t } = useTranslator();
 
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -64,7 +67,7 @@ const loadPptx = async () => {
   error.value = null;
 
   let timeoutId: number | null = window.setTimeout(() => {
-    error.value = '加载超时，请检查网络或稍后重试';
+    error.value = t.value('pptx.timeout');
     loading.value = false;
   }, 30000);
 
@@ -76,7 +79,7 @@ const loadPptx = async () => {
     });
 
     if (!response.ok) {
-      if (response.status === 404) throw new Error('PPT 文件不存在');
+      if (response.status === 404) throw new Error(t.value('pptx.not_found'));
       if (response.status === 403) throw new Error('无权限访问此文件');
       if (response.status >= 500) throw new Error('服务器错误，请稍后重试');
       throw new Error(`文件加载失败 (${response.status})`);
@@ -102,11 +105,11 @@ const loadPptx = async () => {
       try {
         await tempPreviewer.preview(arrayBuffer);
       } catch {
-        throw new Error('PPT 文件格式错误或已损坏');
+        throw new Error(t.value('pptx.invalid_format'));
       }
 
       const count = tempPreviewer.slideCount;
-      if (!count || count === 0) throw new Error('PPT 文件无有效页面');
+      if (!count || count === 0) throw new Error(t.value('pptx.no_pages'));
 
       tempPreviewer.destroy();
 
@@ -138,7 +141,7 @@ const loadPptx = async () => {
     }
   } catch (err) {
     if (timeoutId !== null) clearTimeout(timeoutId);
-    let errorMsg = 'PPT 文件解析失败';
+    let errorMsg = t.value('pptx.parse_failed');
     if (err instanceof Error) errorMsg = err.message;
     else if (typeof err === 'string') errorMsg = err;
     error.value = errorMsg;
@@ -213,7 +216,7 @@ onBeforeUnmount(() => {
         <div
           class="vfp-w-10 vfp-h-10 md:vfp-w-12 md:vfp-h-12 vfp-mx-auto vfp-mb-3 vfp-border-4 vfp-border-white/20 vfp-border-t-white vfp-rounded-full vfp-animate-spin"
         />
-        <p class="vfp-text-xs md:vfp-text-sm vfp-text-white/70 vfp-font-medium">加载 PPT 中...</p>
+        <p class="vfp-text-xs md:vfp-text-sm vfp-text-white/70 vfp-font-medium">{{ t('pptx.loading') }}</p>
       </div>
     </div>
 
@@ -228,7 +231,7 @@ onBeforeUnmount(() => {
           <Presentation class="vfp-w-12 vfp-h-12 md:vfp-w-16 md:vfp-h-16 vfp-text-white" />
         </div>
         <p class="vfp-text-lg md:vfp-text-xl vfp-text-white/90 vfp-mb-2 md:vfp-mb-3 vfp-font-medium">
-          PPT 加载失败
+          {{ t('pptx.load_failed') }}
         </p>
         <p class="vfp-text-xs md:vfp-text-sm vfp-text-white/60 vfp-mb-4 md:vfp-mb-6">{{ error }}</p>
         <a

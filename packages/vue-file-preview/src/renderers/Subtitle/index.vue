@@ -7,11 +7,14 @@ import {
   type SubtitleParseResult,
   type SubtitleFormat,
 } from '@eternalheart/file-preview-core';
+import { useTranslator } from '../../composables/useTranslator';
 
 const props = defineProps<{
   url: string;
   fileName: string;
 }>();
+
+const { t } = useTranslator();
 
 const text = ref<string>('');
 const loading = ref(true);
@@ -40,7 +43,7 @@ const load = async () => {
     text.value = await fetchTextUtf8(props.url);
   } catch (err) {
     console.error(err);
-    error.value = '字幕文件加载失败';
+    error.value = t.value('subtitle.load_failed');
   } finally {
     loading.value = false;
   }
@@ -80,7 +83,7 @@ const wordTimeShort = (t: number) => formatSubtitleTime(t).slice(3, 8);
     class="vfp-flex vfp-items-center vfp-justify-center vfp-w-full vfp-h-full vfp-bg-[#0f0f12]"
   >
     <div class="vfp-text-white/70 vfp-text-center">
-      <p class="vfp-text-lg">{{ error || '字幕解析失败' }}</p>
+      <p class="vfp-text-lg">{{ error || t('subtitle.parse_failed') }}</p>
     </div>
   </div>
 
@@ -122,7 +125,7 @@ const wordTimeShort = (t: number) => formatSubtitleTime(t).slice(3, 8);
 
     <!-- 右下角浮签 -->
     <div class="status-pill">
-      <span>{{ parsed.cues.length }} {{ isLyric ? 'lines' : 'cues' }}</span>
+      <span>{{ parsed.cues.length }} {{ isLyric ? t('subtitle.lines') : t('subtitle.cues') }}</span>
       <template v-if="meta.length">
         <span class="dot">·</span>
         <span>{{ meta.length }}</span>

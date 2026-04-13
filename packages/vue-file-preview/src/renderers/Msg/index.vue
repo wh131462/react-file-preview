@@ -3,10 +3,13 @@ import { ref, computed, watch } from 'vue';
 import MsgReader from '@kenjiuno/msgreader';
 import type { FieldsData } from '@kenjiuno/msgreader';
 import { User, Users, Paperclip, Calendar, Mail, Tag, Clock, Hash } from 'lucide-vue-next';
+import { useTranslator } from '../../composables/useTranslator';
 
 const props = defineProps<{
   url: string;
 }>();
+
+const { t } = useTranslator();
 
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -37,7 +40,7 @@ function formatDate(dateStr: string | undefined): string {
   }
 }
 
-function decodeHtmlBody(f: FieldsData): string {
+function decodeHtmlBody(f: FieldsData, emptyBodyText: string): string {
   if (f.bodyHtml) return f.bodyHtml;
   if (f.html) {
     try {
@@ -53,7 +56,7 @@ function decodeHtmlBody(f: FieldsData): string {
       .replace(/\x3c/g, '&lt;')
       .replace(/>/g, '&gt;')}</pre>`;
   }
-  return '<p style="color: #999;">（无邮件正文）</p>';
+  return `<p style="color: #999;">${emptyBodyText}</p>`;
 }
 
 function formatMessageClass(messageClass: string | undefined): string {
@@ -85,7 +88,7 @@ const loadMsg = async () => {
     fields.value = msgReader.getFileData();
   } catch (err) {
     console.error('MSG 解析错误:', err);
-    error.value = 'Outlook 邮件解析失败';
+    error.value = t.value('msg.parse_failed');
   } finally {
     loading.value = false;
   }
@@ -111,7 +114,7 @@ const receivedDate = computed(() => formatDate(fields.value?.messageDeliveryTime
 const createdDate = computed(() => formatDate(fields.value?.creationTime));
 const lastModified = computed(() => formatDate(fields.value?.lastModificationTime));
 const attachments = computed(() => (fields.value?.attachments || []).filter((a) => !a.attachmentHidden));
-const bodyHtml = computed(() => (fields.value ? decodeHtmlBody(fields.value) : ''));
+const bodyHtml = computed(() => (fields.value ? decodeHtmlBody(fields.value, t.value('msg.empty_body')) : ''));
 const messageClass = computed(() => formatMessageClass(fields.value?.messageClass));
 const messageId = computed(() => fields.value?.messageId || '');
 
@@ -156,7 +159,7 @@ const formatAttachmentSize = (size: number | undefined) => {
 
   <div v-else-if="error || !fields" class="vfp-flex vfp-items-center vfp-justify-center vfp-w-full vfp-h-full">
     <div class="vfp-text-white/70 vfp-text-center">
-      <p class="vfp-text-lg">{{ error || '邮件解析失败' }}</p>
+      <p class="vfp-text-lg">{{ error || t('msg.parse_failed_short') }}</p>
     </div>
   </div>
 

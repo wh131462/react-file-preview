@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, toRef } from 'vue';
 import { Play, Pause, Volume2, VolumeX, Volume1, SkipBack, SkipForward, Repeat } from 'lucide-vue-next';
 import { useAudioPlayer } from '../../composables/useAudioPlayer';
+import { useTranslator } from '../../composables/useTranslator';
 
 const props = defineProps<{
   url: string;
@@ -9,6 +10,8 @@ const props = defineProps<{
 }>();
 
 const urlRef = toRef(props, 'url');
+
+const { t } = useTranslator();
 
 const {
   audioRef,
@@ -239,7 +242,7 @@ const handleVolumeLeave = () => {
             step="any"
             :value="currentTime"
             :disabled="duration <= 0"
-            aria-label="播放进度"
+            :aria-label="t('audio.aria.progress')"
             class="audio-slider vfp-absolute vfp-w-full"
             @input="(e) => seek(parseFloat((e.target as HTMLInputElement).value))"
           />
@@ -264,7 +267,7 @@ const handleVolumeLeave = () => {
             border: 0,
             cursor: 'pointer',
           }"
-          :aria-label="isLoop ? '关闭循环' : '开启循环'"
+          :aria-label="isLoop ? t('audio.aria.loop_off') : t('audio.aria.loop_on')"
           @click="toggleLoop"
         >
           <Repeat class="vfp-w-4 vfp-h-4" />
@@ -274,7 +277,7 @@ const handleVolumeLeave = () => {
         <button
           class="vfp-w-10 vfp-h-10 vfp-rounded-full vfp-flex vfp-items-center vfp-justify-center vfp-transition-colors"
           :style="{ background: 'rgba(255,255,255,0.06)', color: 'rgba(224,223,240,0.7)', border: 0, cursor: 'pointer' }"
-          aria-label="后退10秒"
+          :aria-label="t('audio.aria.backward_10')"
           @click="skip(-10)"
         >
           <SkipBack class="vfp-w-[18px] vfp-h-[18px]" />
@@ -290,7 +293,7 @@ const handleVolumeLeave = () => {
             border: 0,
             cursor: 'pointer',
           }"
-          :aria-label="isPlaying ? '暂停' : '播放'"
+          :aria-label="isPlaying ? t('audio.aria.pause') : t('audio.aria.play')"
           @click="togglePlay"
         >
           <Pause v-if="isPlaying" class="vfp-w-6 vfp-h-6" />
@@ -301,7 +304,7 @@ const handleVolumeLeave = () => {
         <button
           class="vfp-w-10 vfp-h-10 vfp-rounded-full vfp-flex vfp-items-center vfp-justify-center vfp-transition-colors"
           :style="{ background: 'rgba(255,255,255,0.06)', color: 'rgba(224,223,240,0.7)', border: 0, cursor: 'pointer' }"
-          aria-label="前进10秒"
+          :aria-label="t('audio.aria.forward_10')"
           @click="skip(10)"
         >
           <SkipForward class="vfp-w-[18px] vfp-h-[18px]" />
@@ -317,7 +320,7 @@ const handleVolumeLeave = () => {
               border: 0,
               cursor: 'pointer',
             }"
-            :aria-label="isMuted ? '取消静音' : '静音'"
+            :aria-label="isMuted ? t('audio.aria.unmute') : t('audio.aria.mute')"
             @click="toggleMute"
           >
             <component :is="VolumeIcon" class="vfp-w-4 vfp-h-4" />
@@ -361,7 +364,7 @@ const handleVolumeLeave = () => {
                     max="1"
                     step="0.01"
                     :value="isMuted ? 0 : volume"
-                    aria-label="音量"
+                    :aria-label="t('audio.aria.volume')"
                     class="volume-slider-vertical vfp-absolute"
                     style="width: 80px; height: 24px; transform: rotate(-90deg); transform-origin: center center"
                     @input="(e) => setVolume(parseFloat((e.target as HTMLInputElement).value))"

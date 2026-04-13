@@ -3,10 +3,13 @@ import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import MarkdownIt from 'markdown-it';
 import { codeToHtml } from 'shiki';
 import { fetchTextUtf8 } from '@eternalheart/file-preview-core';
+import { useTranslator } from '../../composables/useTranslator';
 
 const props = defineProps<{
   url: string;
 }>();
+
+const { t } = useTranslator();
 
 const content = ref('');
 const html = ref('');
@@ -30,10 +33,11 @@ md.renderer.rules.fence = (tokens, idx) => {
   const code = token.content;
   // 将代码 base64 编码后存到 data 属性,稍后异步用 shiki 高亮
   const encoded = btoa(unescape(encodeURIComponent(code)));
+  const copyLabel = t.value('markdown.copy_code');
   return `<div class="code-block-wrapper">
     <div class="code-block-header">
       <span>${lang}</span>
-      <button class="code-copy-btn" type="button" data-code="${encoded}" title="复制">复制</button>
+      <button class="code-copy-btn" type="button" data-code="${encoded}" title="${copyLabel}">${copyLabel}</button>
     </div>
     <pre data-shiki-pending="1" data-lang="${lang}"><code>${md.utils.escapeHtml(code)}</code></pre>
   </div>`;
@@ -62,7 +66,7 @@ const loadMarkdown = async () => {
     html.value = md.render(text);
   } catch (err) {
     console.error(err);
-    error.value = 'Markdown 文件加载失败';
+    error.value = t.value('markdown.load_failed');
   } finally {
     loading.value = false;
   }
@@ -94,7 +98,7 @@ const handleCopyClick = async (e: MouseEvent) => {
     const code = decodeURIComponent(escape(atob(encoded)));
     await navigator.clipboard.writeText(code);
     const original = target.textContent;
-    target.textContent = '已复制';
+    target.textContent = t.value('markdown.copied');
     setTimeout(() => {
       target.textContent = original;
     }, 2000);

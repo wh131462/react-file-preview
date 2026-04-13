@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount, toRef } from 'vue';
 import { X, Download, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import {
   normalizeFiles,
   getFileType,
   type PreviewFileInput,
+  type Locale,
+  type Messages,
 } from '@eternalheart/file-preview-core';
 import type { CustomRenderer } from './types';
+import { provideLocale, useTranslator } from './composables/useTranslator';
 import type { ToolbarGroup, ToolbarButtonItem, ToolbarTextItem } from './renderers/toolbar.types';
 import { getImageToolbarGroups } from './renderers/Image/toolbar';
 import { getPdfToolbarGroups } from './renderers/Pdf/toolbar';
@@ -43,18 +46,27 @@ interface Props {
   mode?: 'modal' | 'embed';
   /** ZIP 嵌套深度（内部使用），超过上限时不再递归渲染 ZIP */
   zipNestingDepth?: number;
+  /** 语言 */
+  locale?: Locale;
+  /** 自定义翻译字典 */
+  messages?: Partial<Record<Locale, Partial<Messages>>>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   customRenderers: () => [],
   mode: 'modal',
   zipNestingDepth: 0,
+  locale: undefined,
+  messages: undefined,
 });
 
 const emit = defineEmits<{
   (e: 'navigate', index: number): void;
   (e: 'close'): void;
 }>();
+
+provideLocale(toRef(props, 'locale'), toRef(props, 'messages'));
+const { t } = useTranslator();
 
 const zoom = ref(1);
 const rotation = ref(0);
@@ -270,6 +282,7 @@ const toolGroups = computed(() => {
       onRotateLeft: handleRotateLeft,
       onRotateRight: handleRotate,
       onReset: handleReset,
+      t: t.value,
     });
   }
   if (fileType.value === 'pdf') {
@@ -278,6 +291,7 @@ const toolGroups = computed(() => {
       onZoomIn: handleZoomIn,
       onZoomOut: handleZoomOut,
       onReset: handleReset,
+      t: t.value,
     });
   }
   if (fileType.value === 'epub') {
@@ -286,6 +300,7 @@ const toolGroups = computed(() => {
       current: epubCurrent.value,
       total: epubTotal.value,
       fullWidth: epubFullWidth.value,
+      t: t.value,
     });
   }
   if (fileType.value === 'mobi') {
@@ -294,10 +309,11 @@ const toolGroups = computed(() => {
       current: mobiCurrent.value,
       total: mobiTotal.value,
       fullWidth: mobiFullWidth.value,
+      t: t.value,
     });
   }
   if (fileType.value === 'zip') {
-    return getZipToolbarGroups({ stats: zipStats.value });
+    return getZipToolbarGroups({ stats: zipStats.value, t: t.value });
   }
   if (fileType.value === 'text') {
     const ext = currentFile.value!.name.split('.').pop()?.toLowerCase() || '';
@@ -307,6 +323,7 @@ const toolGroups = computed(() => {
       isHtml: ext === 'html' || ext === 'htm',
       htmlPreview: textHtmlPreview.value,
       onToggleHtmlPreview: () => { textHtmlPreview.value = !textHtmlPreview.value; },
+      t: t.value,
     });
   }
   return [];
@@ -317,14 +334,14 @@ const actionGroups = computed<ToolbarGroup[]>(() => {
   const groups: ToolbarGroup[] = [
     {
       items: [
-        { type: 'button', icon: Download, tooltip: '下载', action: handleDownload },
+        { type: 'button', icon: Download, tooltip: t.value('common.download'), action: handleDownload },
       ],
     },
   ];
   if (showCloseButton.value) {
     groups.push({
       items: [
-        { type: 'button', icon: X, tooltip: '关闭', action: () => emit('close') },
+        { type: 'button', icon: X, tooltip: t.value('common.close'), action: () => emit('close') },
       ],
     });
   }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { watch } from 'vue';
-import type { PreviewFileInput } from '@eternalheart/file-preview-core';
+import type { PreviewFileInput, Locale, Messages } from '@eternalheart/file-preview-core';
 import type { CustomRenderer } from './types';
 import FilePreviewContent from './FilePreviewContent.vue';
 import { useScrollLock } from './composables/useScrollLock';
@@ -10,10 +10,16 @@ interface Props {
   currentIndex: number;
   isOpen: boolean;
   customRenderers?: CustomRenderer[];
+  /** 语言 */
+  locale?: Locale;
+  /** 自定义翻译字典 */
+  messages?: Partial<Record<Locale, Partial<Messages>>>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   customRenderers: () => [],
+  locale: undefined,
+  messages: undefined,
 });
 
 const emit = defineEmits<{
@@ -51,6 +57,8 @@ const handleWheel = (e: WheelEvent) => e.stopPropagation();
               :files="files"
               :current-index="currentIndex"
               :custom-renderers="customRenderers"
+              :locale="locale"
+              :messages="messages"
               @close="emit('close')"
               @navigate="(i) => emit('navigate', i)"
             />
