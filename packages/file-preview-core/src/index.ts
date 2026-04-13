@@ -24,6 +24,27 @@ export {
   formatTime,
 } from './utils/fileType';
 
+// 导出 CSV/TSV 解析
+export { parseCsv, guessCsvDelimiter } from './utils/csvParser';
+export type { CsvParseOptions, CsvParseResult } from './utils/csvParser';
+
+// 导出文本编码工具
+export { decodeText, decodeUtf8, fetchTextUtf8 } from './utils/textDecoder';
+
+// 导出字幕解析
+export { parseSubtitle, formatSubtitleTime } from './utils/subtitleParser';
+export type { SubtitleCue, SubtitleParseResult } from './utils/subtitleParser';
+
+// 导出 ZIP 工具
+export {
+  loadZip,
+  listZipEntries,
+  buildZipTree,
+  readZipEntryText,
+  readZipEntryBlob,
+} from './utils/zipReader';
+export type { ZipEntryInfo, ZipTreeNode } from './utils/zipReader';
+
 // 导出 Excel 数据转换
 export { convertWorkbookToSpreadsheetData } from './utils/excelDataConverter';
 

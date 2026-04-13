@@ -28,6 +28,25 @@ export function getFileType(file: PreviewFile): FileType {
   if (mimeType.includes('epub') || ext === 'epub') {
     return 'epub';
   }
+  if (
+    ['mobi', 'azw', 'azw3', 'kf8'].includes(ext) ||
+    mimeType === 'application/x-mobipocket-ebook' ||
+    mimeType === 'application/vnd.amazon.ebook'
+  ) {
+    return 'mobi';
+  }
+  if (['csv', 'tsv'].includes(ext) || mimeType === 'text/csv' || mimeType === 'text/tab-separated-values') {
+    return 'csv';
+  }
+  if (ext === 'xml' || mimeType === 'application/xml' || mimeType === 'text/xml') {
+    return 'xml';
+  }
+  if (['srt', 'vtt'].includes(ext) || mimeType === 'text/vtt' || mimeType === 'application/x-subrip') {
+    return 'subtitle';
+  }
+  if (ext === 'zip' || mimeType === 'application/zip' || mimeType === 'application/x-zip-compressed') {
+    return 'zip';
+  }
   if (mimeType.startsWith('video/') || ['mp4', 'webm', 'ogg', 'ogv', 'mov', 'avi', 'mkv', 'm4v', '3gp', 'flv'].includes(ext)) {
     return 'video';
   }
@@ -41,11 +60,12 @@ export function getFileType(file: PreviewFile): FileType {
     return 'json';
   }
   const textExtensions = [
-    'txt', 'log', 'csv',
+    'txt', 'log', 'lock',
     'js', 'jsx', 'ts', 'tsx',
-    'py', 'java', 'cpp', 'c', 'h', 'cs', 'php', 'rb', 'go', 'rs', 'swift', 'kt',
+    'py', 'java', 'cpp', 'c', 'h', 'cs', 'php', 'rb', 'go', 'mod', 'rs', 'swift', 'kt', 'lua', 'vim',
     'html', 'css', 'scss', 'sass', 'less',
-    'xml', 'yaml', 'yml', 'toml', 'ini', 'conf',
+    'yaml', 'yml', 'toml', 'ini', 'conf', 'env',
+    'diff', 'patch',
     'sh', 'bash', 'zsh', 'sql',
   ];
   if (mimeType.startsWith('text/') || textExtensions.includes(ext)) {
@@ -72,9 +92,12 @@ export function getLanguageFromFileName(fileName: string): string {
     php: 'php',
     rb: 'ruby',
     go: 'go',
+    mod: 'go',
     rs: 'rust',
     swift: 'swift',
     kt: 'kotlin',
+    lua: 'lua',
+    vim: 'vim',
     scala: 'scala',
     sh: 'bash',
     bash: 'bash',
@@ -91,7 +114,11 @@ export function getLanguageFromFileName(fileName: string): string {
     yml: 'yaml',
     toml: 'toml',
     ini: 'ini',
+    env: 'bash',
     conf: 'nginx',
+    diff: 'diff',
+    patch: 'diff',
+    log: 'log',
     md: 'markdown',
     txt: 'text',
   };

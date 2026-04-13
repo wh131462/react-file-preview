@@ -47,16 +47,21 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "exceljs": "^4.4.0"
+    "exceljs": "^4.4.0",
+    "jszip": "^3.10.1"
   },
   "peerDependenciesMeta": {
     "exceljs": {
+      "optional": true
+    },
+    "jszip": {
       "optional": true
     }
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
     "exceljs": "^4.4.0",
+    "jszip": "^3.10.1",
     "typescript": "^5.6.3",
     "vite": "^5.4.11"
   }

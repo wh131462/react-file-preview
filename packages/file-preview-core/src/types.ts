@@ -27,10 +27,15 @@ export type FileType =
   | 'pptx'
   | 'msg'
   | 'epub'
+  | 'mobi'
   | 'video'
   | 'audio'
   | 'markdown'
   | 'json'
+  | 'csv'
+  | 'xml'
+  | 'subtitle'
+  | 'zip'
   | 'text'
   | 'unsupported';
 

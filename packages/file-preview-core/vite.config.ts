@@ -15,7 +15,7 @@ export default defineConfig({
       fileName: (format) => `index.${format === 'es' ? 'mjs' : 'cjs'}`,
     },
     rollupOptions: {
-      external: ['exceljs'],
+      external: ['exceljs', 'jszip'],
     },
     sourcemap: true,
     emptyOutDir: true,

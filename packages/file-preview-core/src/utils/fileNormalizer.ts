@@ -59,6 +59,10 @@ export function inferMimeType(fileName: string): string {
     pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     ppt: 'application/vnd.ms-powerpoint',
     msg: 'application/vnd.ms-outlook',
+    mobi: 'application/x-mobipocket-ebook',
+    azw: 'application/vnd.amazon.ebook',
+    azw3: 'application/vnd.amazon.ebook',
+    kf8: 'application/vnd.amazon.ebook',
 
     // 文本
     txt: 'text/plain',
@@ -83,6 +87,17 @@ export function inferMimeType(fileName: string): string {
     rs: 'text/x-rust',
     yaml: 'text/yaml',
     yml: 'text/yaml',
+    toml: 'text/toml',
+    ini: 'text/plain',
+    env: 'text/plain',
+    diff: 'text/x-diff',
+    patch: 'text/x-diff',
+    log: 'text/plain',
+    csv: 'text/csv',
+    tsv: 'text/tab-separated-values',
+    srt: 'application/x-subrip',
+    vtt: 'text/vtt',
+    zip: 'application/zip',
   };
 
   return mimeTypes[ext] || 'application/octet-stream';
