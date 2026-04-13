@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { ghcolors } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Copy, Check } from 'lucide-react';
+import { fetchTextUtf8 } from '@eternalheart/file-preview-core';
 
 interface MarkdownRendererProps {
   url: string;
@@ -51,11 +52,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ url }) => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('加载失败');
-        }
-        const text = await response.text();
+        const text = await fetchTextUtf8(url);
         setContent(text);
       } catch (err) {
         setError('Markdown 文件加载失败');

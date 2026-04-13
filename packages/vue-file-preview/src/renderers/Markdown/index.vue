@@ -2,6 +2,7 @@
 import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import MarkdownIt from 'markdown-it';
 import { codeToHtml } from 'shiki';
+import { fetchTextUtf8 } from '@eternalheart/file-preview-core';
 
 const props = defineProps<{
   url: string;
@@ -56,9 +57,7 @@ const loadMarkdown = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await fetch(props.url);
-    if (!response.ok) throw new Error('加载失败');
-    const text = await response.text();
+    const text = await fetchTextUtf8(props.url);
     content.value = text;
     html.value = md.render(text);
   } catch (err) {

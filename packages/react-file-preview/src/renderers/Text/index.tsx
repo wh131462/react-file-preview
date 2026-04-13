@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { FileText } from 'lucide-react';
+import { fetchTextUtf8 } from '@eternalheart/file-preview-core';
 
 interface TextRendererProps {
   url: string;
@@ -60,11 +61,7 @@ export const TextRenderer: React.FC<TextRendererProps> = ({ url, fileName }) => 
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('加载失败');
-        }
-        const text = await response.text();
+        const text = await fetchTextUtf8(url);
         setContent(text);
       } catch (err) {
         setError('文本文件加载失败');

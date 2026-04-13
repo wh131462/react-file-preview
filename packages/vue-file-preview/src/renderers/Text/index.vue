@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { FileText } from 'lucide-vue-next';
-import { getLanguageFromFileName } from '@eternalheart/file-preview-core';
+import { getLanguageFromFileName, fetchTextUtf8 } from '@eternalheart/file-preview-core';
 import { codeToHtml } from 'shiki';
 
 const props = defineProps<{
@@ -20,9 +20,7 @@ const loadText = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await fetch(props.url);
-    if (!response.ok) throw new Error('加载失败');
-    const text = await response.text();
+    const text = await fetchTextUtf8(props.url);
     content.value = text;
 
     if (language.value !== 'text') {

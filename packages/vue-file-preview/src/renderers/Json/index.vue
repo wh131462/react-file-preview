@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { FileText } from 'lucide-vue-next';
+import { fetchTextUtf8 } from '@eternalheart/file-preview-core';
 import { codeToHtml } from 'shiki';
 
 const props = defineProps<{
@@ -17,9 +18,7 @@ const loadJson = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await fetch(props.url);
-    if (!response.ok) throw new Error('加载失败');
-    const text = await response.text();
+    const text = await fetchTextUtf8(props.url);
     // 格式化 JSON
     try {
       const parsed = JSON.parse(text);
