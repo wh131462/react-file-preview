@@ -307,7 +307,24 @@ const files = [
 ### Code & Text
 - **Markdown**: GitHub Flavored Markdown, code highlighting
 - **Code Files**: JS, TS, Python, Java, C++, Go, Rust, and 40+ languages
-- **Text Files**: TXT, LOG, CSV, JSON, YAML, XML, etc.
+- **Config/Logs**: YAML, TOML, INI, ENV, LOG, DIFF, PATCH, etc.
+
+### Structured Data
+- **JSON**: Auto formatting + syntax highlighting
+- **CSV/TSV**: Zero-dependency parser, table view with headers and row/column stats
+- **XML**: `DOMParser` validation + pretty print + syntax highlighting
+
+### Subtitles
+- **SRT / WebVTT**: Zero-dependency parser, structured cue list (index, time range, text)
+
+### Archives
+- **ZIP**: Tree view + inline preview for text/code/image entries, download fallback for other types
+
+### Outlook Email
+- **MSG**: Headers, body rendering, attachment list
+
+### E-books
+- **EPUB**: Chapter navigation, pagination
 
 ## 🎮 API Reference
 
@@ -422,7 +439,26 @@ const files = [
 #### Text Files
 - **Markdown**: File extensions `.md` or `.markdown`
 - **Code**: Auto-detected by file extension (`.js`, `.ts`, `.py`, `.java`, etc.)
-- **Plain Text**: `text/plain`, `text/csv`, etc.
+- **Config / Logs**: `.yaml`, `.yml`, `.toml`, `.ini`, `.conf`, `.env`, `.log`, `.diff`, `.patch`
+- **Plain Text**: `text/plain`
+
+#### Structured Data
+- **JSON**: `application/json` (.json)
+- **CSV / TSV**: `text/csv` (.csv), `text/tab-separated-values` (.tsv)
+- **XML**: `application/xml`, `text/xml` (.xml)
+
+#### Subtitles
+- **SRT**: `application/x-subrip` (.srt)
+- **WebVTT**: `text/vtt` (.vtt)
+
+#### Archives
+- **ZIP**: `application/zip`, `application/x-zip-compressed` (.zip)
+
+#### Outlook Email
+- **MSG**: `application/vnd.ms-outlook` (.msg)
+
+#### E-books
+- **EPUB**: `application/epub+zip` (.epub)
 
 ## 🎨 Custom Styling
 

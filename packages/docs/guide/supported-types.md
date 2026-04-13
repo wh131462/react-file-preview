@@ -137,22 +137,23 @@ React File Preview 支持多种常见的文件格式预览。
 - **Java** - `.java`
 - **C/C++** - `.c`, `.cpp`, `.h`
 - **C#** - `.cs`
-- **Go** - `.go`
+- **Go** - `.go`, `.mod`
 - **Rust** - `.rs`
+- **Lua** - `.lua`
+- **Vim Script** - `.vim`
 - **PHP** - `.php`
 - **Ruby** - `.rb`
 - **Swift** - `.swift`
 - **Kotlin** - `.kt`
 - **HTML** - `.html`
 - **CSS/SCSS/Sass/Less** - `.css`, `.scss`, `.sass`, `.less`
-- **JSON** - `.json`
 - **YAML** - `.yaml`, `.yml`
-- **XML** - `.xml`
 - **TOML** - `.toml`
-- **INI** - `.ini`, `.conf`
+- **INI** - `.ini`, `.conf`, `.env`
+- **Lock 文件** - `.lock`
+- **Diff/Patch** - `.diff`, `.patch`
 - **Shell** - `.sh`, `.bash`, `.zsh`
 - **SQL** - `.sql`
-- **CSV** - `.csv`
 - **Log** - `.log`
 
 ### 特性
@@ -160,6 +161,59 @@ React File Preview 支持多种常见的文件格式预览。
 - 语法高亮（VS Code Dark+ 主题）
 - 自动语言检测
 - 行号显示
+
+## CSV / TSV 表格
+
+- **CSV** - `.csv`
+- **TSV** - `.tsv`
+
+### 特性
+
+- 纯前端解析，无第三方依赖
+- 支持 RFC 4180 双引号转义与字段内换行
+- 表格式渲染，首行自动识别为表头
+- 显示行数/列数统计
+
+## XML
+
+- **XML** - `.xml`
+
+### 特性
+
+- 使用浏览器原生 `DOMParser` 做格式校验
+- 自动缩进美化
+- 语法高亮
+
+## 字幕文件
+
+- **SRT** - `.srt`
+- **WebVTT** - `.vtt`
+
+### 特性
+
+- 纯前端解析，无第三方依赖
+- 结构化 cue 列表展示（索引、时间区间、文本）
+- 自动识别 SRT / VTT 格式
+
+## JSON
+
+- **JSON** - `.json`
+
+### 特性
+
+- 自动格式化缩进
+- 语法高亮
+
+## ZIP 压缩包
+
+- **ZIP** - `.zip`
+
+### 特性
+
+- 基于 JSZip 解析压缩包目录结构
+- 左侧树形目录 + 右侧内嵌预览
+- 内嵌预览文本、代码（带高亮）与图片
+- 其他类型可通过"下载"按钮导出为独立文件
 
 ## 纯文本
 
@@ -194,6 +248,11 @@ React File Preview 支持多种常见的文件格式预览。
 - `video` - 视频文件
 - `audio` - 音频文件
 - `markdown` - Markdown 文件
-- `text` - 文本和代码文件
+- `json` - JSON 文件
+- `csv` - CSV/TSV 文件
+- `xml` - XML 文件
+- `subtitle` - SRT/VTT 字幕文件
+- `zip` - ZIP 压缩包
+- `text` - 其他文本和代码文件
 - `unsupported` - 不支持的类型
 

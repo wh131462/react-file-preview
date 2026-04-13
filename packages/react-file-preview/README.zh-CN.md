@@ -305,7 +305,24 @@ const files = [
 ### 代码 & 文本
 - **Markdown**: GitHub Flavored Markdown,代码高亮
 - **代码文件**: JS, TS, Python, Java, C++, Go, Rust 等 40+ 种语言
-- **文本文件**: TXT, LOG, CSV, JSON, YAML, XML 等
+- **配置 / 日志**: YAML, TOML, INI, ENV, LOG, DIFF, PATCH 等
+
+### 结构化数据
+- **JSON**: 自动格式化 + 语法高亮
+- **CSV / TSV**: 零依赖解析,表格视图 + 行列统计
+- **XML**: `DOMParser` 校验 + 自动缩进 + 语法高亮
+
+### 字幕
+- **SRT / WebVTT**: 零依赖解析,结构化 cue 列表(索引、时间区间、文本)
+
+### 压缩包
+- **ZIP**: 树形目录 + 内嵌预览文本/代码/图片,其他类型可下载导出
+
+### Outlook 邮件
+- **MSG**: 邮件头、正文、附件列表
+
+### 电子书
+- **EPUB**: 章节导航、翻页
 
 ## 🎮 API 参考
 
@@ -420,7 +437,26 @@ const files = [
 #### 文本文件
 - **Markdown**: 文件扩展名 `.md` 或 `.markdown`
 - **代码**: 根据文件扩展名自动识别 (`.js`, `.ts`, `.py`, `.java`, 等)
-- **纯文本**: `text/plain`, `text/csv`, 等
+- **配置 / 日志**: `.yaml`, `.yml`, `.toml`, `.ini`, `.conf`, `.env`, `.log`, `.diff`, `.patch`
+- **纯文本**: `text/plain`
+
+#### 结构化数据
+- **JSON**: `application/json` (.json)
+- **CSV / TSV**: `text/csv` (.csv), `text/tab-separated-values` (.tsv)
+- **XML**: `application/xml`, `text/xml` (.xml)
+
+#### 字幕
+- **SRT**: `application/x-subrip` (.srt)
+- **WebVTT**: `text/vtt` (.vtt)
+
+#### 压缩包
+- **ZIP**: `application/zip`, `application/x-zip-compressed` (.zip)
+
+#### Outlook 邮件
+- **MSG**: `application/vnd.ms-outlook` (.msg)
+
+#### 电子书
+- **EPUB**: `application/epub+zip` (.epub)
 
 ## 🎨 自定义样式
 

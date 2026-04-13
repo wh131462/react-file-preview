@@ -235,7 +235,24 @@ Differences from `FilePreviewModal`:
 ### Code & Text
 - **Markdown**: GitHub Flavored Markdown, code highlighting
 - **Code Files**: JS, TS, Python, Java, C++, Go, Rust, and 40+ languages
-- **Text Files**: TXT, LOG, CSV, JSON, YAML, XML, etc.
+- **Config/Logs**: YAML, TOML, INI, ENV, LOG, DIFF, PATCH, etc.
+
+### Structured Data
+- **JSON**: Auto formatting + syntax highlighting
+- **CSV/TSV**: Zero-dependency parser, table view with headers and row/column stats
+- **XML**: `DOMParser` validation + pretty print + syntax highlighting
+
+### Subtitles
+- **SRT / WebVTT**: Zero-dependency parser, structured cue list (index, time range, text)
+
+### Archives
+- **ZIP**: Tree view + inline preview for text/code/image entries, download fallback for other types
+
+### Outlook Email
+- **MSG**: Headers, body rendering, attachment list
+
+### E-books
+- **EPUB**: Chapter navigation, pagination
 
 ## 🎮 API Reference
 
