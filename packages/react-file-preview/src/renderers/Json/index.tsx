@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FileText } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import { fetchTextUtf8 } from '@eternalheart/file-preview-core';
 
 interface JsonRendererProps {
@@ -9,8 +7,118 @@ interface JsonRendererProps {
   fileName: string;
 }
 
-export const JsonRenderer: React.FC<JsonRendererProps> = ({ url, fileName }) => {
-  const [content, setContent] = useState<string>('');
+// ---------- JSON 树节点 ----------
+
+interface JsonNodeProps {
+  keyName?: string;
+  value: unknown;
+  depth: number;
+  defaultExpanded: boolean;
+}
+
+const JsonNode: React.FC<JsonNodeProps> = ({ keyName, value, depth, defaultExpanded }) => {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+  const indent = depth * 20;
+
+  const toggle = useCallback(() => setExpanded(prev => !prev), []);
+
+  // 基本类型
+  if (value === null || value === undefined || typeof value !== 'object') {
+    return (
+      <div className="rfp-flex rfp-items-start rfp-py-px rfp-font-mono rfp-text-sm" style={{ paddingLeft: `${indent}px` }}>
+        <span className="rfp-w-4 rfp-h-5 rfp-flex-shrink-0" />
+        {keyName !== undefined && (
+          <span className="rfp-text-[#9cdcfe] rfp-flex-shrink-0">
+            "{keyName}"<span className="rfp-text-white/50">: </span>
+          </span>
+        )}
+        {renderPrimitive(value)}
+      </div>
+    );
+  }
+
+  const isArray = Array.isArray(value);
+  const entries = isArray ? (value as unknown[]) : Object.entries(value as Record<string, unknown>);
+  const count = entries.length;
+  const openBracket = isArray ? '[' : '{';
+  const closeBracket = isArray ? ']' : '}';
+
+  // 空对象/数组
+  if (count === 0) {
+    return (
+      <div className="rfp-flex rfp-items-start rfp-py-px rfp-font-mono rfp-text-sm" style={{ paddingLeft: `${indent}px` }}>
+        <span className="rfp-w-4 rfp-h-5 rfp-flex-shrink-0" />
+        {keyName !== undefined && (
+          <span className="rfp-text-[#9cdcfe] rfp-flex-shrink-0">
+            "{keyName}"<span className="rfp-text-white/50">: </span>
+          </span>
+        )}
+        <span className="rfp-text-white/70">{openBracket}{closeBracket}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {/* 折叠行 */}
+      <div
+        className="rfp-flex rfp-items-start rfp-py-px rfp-font-mono rfp-text-sm rfp-cursor-pointer hover:rfp-bg-white/5 rfp-select-none"
+        style={{ paddingLeft: `${indent}px` }}
+        onClick={toggle}
+      >
+        <span className="rfp-w-4 rfp-h-5 rfp-flex-shrink-0 rfp-flex rfp-items-center rfp-justify-center rfp-text-white/40">
+          {expanded
+            ? <ChevronDown className="rfp-w-3.5 rfp-h-3.5" />
+            : <ChevronRight className="rfp-w-3.5 rfp-h-3.5" />
+          }
+        </span>
+        {keyName !== undefined && (
+          <span className="rfp-text-[#9cdcfe] rfp-flex-shrink-0">
+            "{keyName}"<span className="rfp-text-white/50">: </span>
+          </span>
+        )}
+        <span className="rfp-text-white/70">{openBracket}</span>
+        {!expanded && (
+          <span className="rfp-text-white/30 rfp-ml-1">
+            {isArray ? `${count} items` : `${count} keys`}
+            <span className="rfp-text-white/70"> {closeBracket}</span>
+          </span>
+        )}
+      </div>
+
+      {/* 子节点 */}
+      {expanded && (
+        <>
+          {isArray
+            ? (value as unknown[]).map((item, i) => (
+                <JsonNode key={i} value={item} depth={depth + 1} defaultExpanded={depth < 1} />
+              ))
+            : Object.entries(value as Record<string, unknown>).map(([k, v]) => (
+                <JsonNode key={k} keyName={k} value={v} depth={depth + 1} defaultExpanded={depth < 1} />
+              ))
+          }
+          <div className="rfp-font-mono rfp-text-sm rfp-text-white/70 rfp-py-px" style={{ paddingLeft: `${indent + 20}px` }}>
+            {closeBracket}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+function renderPrimitive(value: unknown) {
+  if (value === null) return <span className="rfp-text-[#569cd6] rfp-italic">null</span>;
+  if (value === undefined) return <span className="rfp-text-[#569cd6] rfp-italic">undefined</span>;
+  if (typeof value === 'boolean') return <span className="rfp-text-[#569cd6]">{String(value)}</span>;
+  if (typeof value === 'number') return <span className="rfp-text-[#b5cea8]">{String(value)}</span>;
+  if (typeof value === 'string') return <span className="rfp-text-[#ce9178]">"{value}"</span>;
+  return <span className="rfp-text-white/70">{String(value)}</span>;
+}
+
+// ---------- Main ----------
+
+export const JsonRenderer: React.FC<JsonRendererProps> = ({ url }) => {
+  const [data, setData] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,14 +128,7 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({ url, fileName }) => 
         setLoading(true);
         setError(null);
         const text = await fetchTextUtf8(url);
-        // 格式化 JSON
-        try {
-          const parsed = JSON.parse(text);
-          setContent(JSON.stringify(parsed, null, 2));
-        } catch {
-          // JSON 解析失败，按原文展示
-          setContent(text);
-        }
+        setData(JSON.parse(text));
       } catch (err) {
         setError('JSON 文件加载失败');
         console.error(err);
@@ -57,35 +158,8 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({ url, fileName }) => 
   }
 
   return (
-    <div className="rfp-w-full rfp-h-full rfp-overflow-auto rfp-p-4 md:rfp-p-8">
-      <div className="rfp-max-w-full md:rfp-max-w-6xl rfp-mx-auto rfp-bg-white/5 rfp-backdrop-blur-sm rfp-rounded-2xl rfp-border rfp-border-white/10 rfp-overflow-hidden">
-        <div className="rfp-flex rfp-items-center rfp-gap-2 md:rfp-gap-3 rfp-px-4 rfp-py-3 md:rfp-px-6 md:rfp-py-4 rfp-bg-white/5 rfp-border-b rfp-border-white/10">
-          <FileText className="rfp-w-4 rfp-h-4 md:rfp-w-5 md:rfp-h-5 rfp-text-white/70 rfp-flex-shrink-0" />
-          <span className="rfp-text-white rfp-font-medium rfp-text-sm md:rfp-text-base rfp-truncate">{fileName}</span>
-          <span className="rfp-ml-auto rfp-text-xs rfp-text-white/50 rfp-uppercase rfp-flex-shrink-0">JSON</span>
-        </div>
-        <div className="rfp-text-sm">
-          <SyntaxHighlighter
-            language="json"
-            style={vscDarkPlus}
-            showLineNumbers
-            customStyle={{
-              margin: 0,
-              padding: '1.5rem',
-              background: 'transparent',
-              fontSize: '0.875rem',
-            }}
-            lineNumberStyle={{
-              minWidth: '3em',
-              paddingRight: '1em',
-              color: 'rgba(255, 255, 255, 0.3)',
-              userSelect: 'none',
-            }}
-          >
-            {content}
-          </SyntaxHighlighter>
-        </div>
-      </div>
+    <div className="rfp-w-full rfp-h-full rfp-overflow-auto rfp-bg-[#1e1e1e] rfp-py-3 rfp-pr-4">
+      <JsonNode value={data} depth={0} defaultExpanded />
     </div>
   );
 };
