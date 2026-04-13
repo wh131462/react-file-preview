@@ -1,17 +1,31 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Subtitles } from 'lucide-react';
-import { parseSubtitle, formatSubtitleTime, fetchTextUtf8, type SubtitleParseResult } from '@eternalheart/file-preview-core';
+import {
+  parseSubtitle,
+  formatSubtitleTime,
+  fetchTextUtf8,
+  type SubtitleParseResult,
+  type SubtitleFormat,
+} from '@eternalheart/file-preview-core';
 
 interface SubtitleRendererProps {
   url: string;
   fileName: string;
 }
 
-const getFormat = (fileName: string): 'srt' | 'vtt' | undefined => {
-  const ext = fileName.split('.').pop()?.toLowerCase();
-  if (ext === 'vtt') return 'vtt';
-  if (ext === 'srt') return 'srt';
-  return undefined;
+const FORMAT_BY_EXT: Record<string, SubtitleFormat> = {
+  srt: 'srt',
+  vtt: 'vtt',
+  lrc: 'lrc',
+  elrc: 'elrc',
+  ass: 'ass',
+  ssa: 'ssa',
+  ttml: 'ttml',
+  dfxp: 'ttml',
+};
+
+const getFormat = (fileName: string): SubtitleFormat | undefined => {
+  const ext = fileName.split('.').pop()?.toLowerCase() || '';
+  return FORMAT_BY_EXT[ext];
 };
 
 export const SubtitleRenderer: React.FC<SubtitleRendererProps> = ({ url, fileName }) => {
@@ -47,7 +61,7 @@ export const SubtitleRenderer: React.FC<SubtitleRendererProps> = ({ url, fileNam
 
   if (loading) {
     return (
-      <div className="rfp-flex rfp-items-center rfp-justify-center rfp-w-full rfp-h-full">
+      <div className="rfp-flex rfp-items-center rfp-justify-center rfp-w-full rfp-h-full rfp-bg-[#0f0f12]">
         <div className="rfp-w-12 rfp-h-12 rfp-border-4 rfp-border-white/20 rfp-border-t-white rfp-rounded-full rfp-animate-spin" />
       </div>
     );
@@ -55,7 +69,7 @@ export const SubtitleRenderer: React.FC<SubtitleRendererProps> = ({ url, fileNam
 
   if (error || !parsed) {
     return (
-      <div className="rfp-flex rfp-items-center rfp-justify-center rfp-w-full rfp-h-full">
+      <div className="rfp-flex rfp-items-center rfp-justify-center rfp-w-full rfp-h-full rfp-bg-[#0f0f12]">
         <div className="rfp-text-white/70 rfp-text-center">
           <p className="rfp-text-lg">{error || '字幕解析失败'}</p>
         </div>
@@ -63,37 +77,83 @@ export const SubtitleRenderer: React.FC<SubtitleRendererProps> = ({ url, fileNam
     );
   }
 
-  return (
-    <div className="rfp-w-full rfp-h-full rfp-overflow-auto rfp-p-4 md:rfp-p-8">
-      <div className="rfp-max-w-full md:rfp-max-w-4xl rfp-mx-auto rfp-bg-white/5 rfp-backdrop-blur-sm rfp-rounded-2xl rfp-border rfp-border-white/10 rfp-overflow-hidden">
-        <div className="rfp-flex rfp-items-center rfp-gap-2 md:rfp-gap-3 rfp-px-4 rfp-py-3 md:rfp-px-6 md:rfp-py-4 rfp-bg-white/5 rfp-border-b rfp-border-white/10">
-          <Subtitles className="rfp-w-4 rfp-h-4 md:rfp-w-5 md:rfp-h-5 rfp-text-white/70 rfp-flex-shrink-0" />
-          <span className="rfp-text-white rfp-font-medium rfp-text-sm md:rfp-text-base rfp-truncate">{fileName}</span>
-          <span className="rfp-ml-auto rfp-text-xs rfp-text-white/50 rfp-uppercase rfp-flex-shrink-0">
-            {parsed.format} · {parsed.cues.length} cues
-          </span>
-        </div>
+  const isLyric = parsed.format === 'lrc' || parsed.format === 'elrc';
+  const meta = parsed.metadata ?? {};
+  const dotHover = isLyric ? 'group-hover:rfp-bg-violet-400' : 'group-hover:rfp-bg-sky-400';
 
-        <ol className="rfp-divide-y rfp-divide-white/5">
-          {parsed.cues.map((cue, i) => (
-            <li
-              key={`cue-${i}`}
-              className="rfp-px-4 rfp-py-3 md:rfp-px-6 md:rfp-py-4 rfp-flex rfp-gap-3 md:rfp-gap-5 hover:rfp-bg-white/5 rfp-transition-colors"
-            >
-              <div className="rfp-flex-shrink-0 rfp-w-10 rfp-text-right rfp-text-white/40 rfp-text-xs rfp-font-mono rfp-tabular-nums rfp-pt-0.5">
-                {cue.id ?? i + 1}
-              </div>
-              <div className="rfp-flex-1 rfp-min-w-0">
-                <div className="rfp-text-xs rfp-font-mono rfp-text-white/50 rfp-mb-1 rfp-tabular-nums">
-                  {formatSubtitleTime(cue.start)} → {formatSubtitleTime(cue.end)}
+  return (
+    <div className="rfp-relative rfp-w-full rfp-h-full rfp-bg-[#0f0f12]">
+      {/* 内容滚动区 */}
+      <div className="rfp-w-full rfp-h-full rfp-overflow-auto rfp-px-6 md:rfp-px-10 rfp-pt-6 rfp-pb-16 md:rfp-pb-20">
+        <div className="rfp-relative rfp-max-w-5xl rfp-mx-auto">
+          {/* vertical line */}
+          <div className="rfp-absolute rfp-left-[5px] md:rfp-left-[7px] rfp-top-2 rfp-bottom-2 rfp-w-px rfp-bg-white/[0.08]" />
+
+          <ol className="rfp-space-y-5 md:rfp-space-y-6">
+            {parsed.cues.map((cue, i) => (
+              <li key={`cue-${i}`} className="rfp-relative rfp-pl-6 md:rfp-pl-8 rfp-group">
+                {/* dot */}
+                <div
+                  className={`rfp-absolute rfp-left-0 rfp-top-2 rfp-w-3 rfp-h-3 rfp-rounded-full rfp-bg-white/15 rfp-border-2 rfp-border-[#0f0f12] rfp-transition-colors ${dotHover}`}
+                />
+
+                <div className="rfp-flex rfp-flex-wrap rfp-items-baseline rfp-gap-x-3 rfp-gap-y-1 rfp-mb-1.5">
+                  <span className="rfp-text-[11px] rfp-font-mono rfp-text-white/45 rfp-tabular-nums">
+                    {formatSubtitleTime(cue.start)}
+                  </span>
+                  <span className="rfp-text-[11px] rfp-text-white/25">→</span>
+                  <span className="rfp-text-[11px] rfp-font-mono rfp-text-white/45 rfp-tabular-nums">
+                    {formatSubtitleTime(cue.end)}
+                  </span>
+                  <span className="rfp-text-[10px] rfp-font-mono rfp-text-white/25 rfp-tabular-nums">
+                    #{cue.id ?? i + 1}
+                  </span>
+                  {cue.style && (
+                    <span className="rfp-text-[9px] rfp-uppercase rfp-tracking-widest rfp-text-white/55 rfp-px-1.5 rfp-py-0.5 rfp-rounded rfp-bg-white/[0.06] rfp-border rfp-border-white/10">
+                      {cue.style}
+                    </span>
+                  )}
                 </div>
-                <div className="rfp-text-sm md:rfp-text-base rfp-text-white/90 rfp-whitespace-pre-wrap rfp-break-words">
-                  {cue.text}
-                </div>
-              </div>
-            </li>
-          ))}
-        </ol>
+
+                {cue.words && cue.words.length > 0 ? (
+                  <div className="rfp-flex rfp-flex-wrap rfp-gap-x-1.5 rfp-gap-y-1 rfp-text-base md:rfp-text-lg rfp-text-white/90 rfp-leading-relaxed group-hover:rfp-text-white rfp-transition-colors">
+                    {cue.words.map((word, wi) => (
+                      <span
+                        key={`w-${wi}`}
+                        className="rfp-inline-flex rfp-flex-col rfp-items-start"
+                        title={formatSubtitleTime(word.start)}
+                      >
+                        <span className="rfp-text-[9px] rfp-text-white/30 rfp-font-mono rfp-leading-none rfp-tabular-nums">
+                          {formatSubtitleTime(word.start).slice(3, 8)}
+                        </span>
+                        <span className="rfp-leading-snug">{word.text}</span>
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p
+                    className={`rfp-whitespace-pre-wrap rfp-break-words rfp-leading-relaxed group-hover:rfp-text-white rfp-transition-colors rfp-text-white/90 ${
+                      isLyric ? 'rfp-text-base md:rfp-text-xl rfp-font-medium' : 'rfp-text-sm md:rfp-text-base'
+                    }`}
+                  >
+                    {cue.text}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+
+      {/* 底部状态栏 */}
+      <div className="rfp-pointer-events-none rfp-absolute rfp-bottom-3 rfp-right-3 md:rfp-bottom-4 md:rfp-right-4 rfp-flex rfp-items-center rfp-gap-2 rfp-px-2.5 rfp-py-1 rfp-rounded-full rfp-bg-black/40 rfp-backdrop-blur rfp-border rfp-border-white/10 rfp-text-[10px] rfp-text-white/55 rfp-font-mono rfp-tabular-nums">
+        <span>{parsed.cues.length} {isLyric ? 'lines' : 'cues'}</span>
+        {meta.length && (
+          <>
+            <span className="rfp-text-white/20">·</span>
+            <span>{meta.length}</span>
+          </>
+        )}
       </div>
     </div>
   );
