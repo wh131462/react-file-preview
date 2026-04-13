@@ -41,7 +41,12 @@ export function getFileType(file: PreviewFile): FileType {
   if (ext === 'xml' || mimeType === 'application/xml' || mimeType === 'text/xml') {
     return 'xml';
   }
-  if (['srt', 'vtt'].includes(ext) || mimeType === 'text/vtt' || mimeType === 'application/x-subrip') {
+  if (
+    ['srt', 'vtt', 'lrc', 'elrc', 'ass', 'ssa', 'ttml', 'dfxp'].includes(ext) ||
+    mimeType === 'text/vtt' ||
+    mimeType === 'application/x-subrip' ||
+    mimeType === 'application/ttml+xml'
+  ) {
     return 'subtitle';
   }
   if (ext === 'zip' || mimeType === 'application/zip' || mimeType === 'application/x-zip-compressed') {

@@ -31,9 +31,14 @@ export type { CsvParseOptions, CsvParseResult } from './utils/csvParser';
 // 导出文本编码工具
 export { decodeText, decodeUtf8, fetchTextUtf8 } from './utils/textDecoder';
 
-// 导出字幕解析
+// 导出字幕 / 歌词解析
 export { parseSubtitle, formatSubtitleTime } from './utils/subtitleParser';
-export type { SubtitleCue, SubtitleParseResult } from './utils/subtitleParser';
+export type {
+  SubtitleCue,
+  SubtitleWord,
+  SubtitleParseResult,
+  SubtitleFormat,
+} from './utils/subtitleParser';
 
 // 导出 ZIP 工具
 export {

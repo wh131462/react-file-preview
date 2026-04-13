@@ -1,10 +1,21 @@
 /**
- * 字幕文件解析器：支持 SRT 与 WebVTT
+ * 时间文本（字幕 / 歌词）解析器
+ * 支持：SRT、WebVTT、LRC、Enhanced LRC (ELRC)、ASS / SSA、TTML
  * 不依赖任何第三方库
  */
 
+export type SubtitleFormat = 'srt' | 'vtt' | 'lrc' | 'elrc' | 'ass' | 'ssa' | 'ttml';
+
+/** ELRC 的逐字时间戳片段 */
+export interface SubtitleWord {
+  /** 该词起始时间（秒） */
+  start: number;
+  /** 词文本 */
+  text: string;
+}
+
 export interface SubtitleCue {
-  /** 索引（SRT 为数字字符串；VTT 可选） */
+  /** 索引（SRT 为数字字符串；VTT 可选；其他格式可空） */
   id?: string;
   /** 起始时间（秒） */
   start: number;
@@ -12,13 +23,19 @@ export interface SubtitleCue {
   end: number;
   /** 纯文本（多行合并，保留换行） */
   text: string;
+  /** 增强歌词（ELRC）的逐字时间戳 */
+  words?: SubtitleWord[];
+  /** ASS / SSA 的样式名 */
+  style?: string;
 }
 
 export interface SubtitleParseResult {
-  format: 'srt' | 'vtt';
+  format: SubtitleFormat;
   cues: SubtitleCue[];
-  /** WebVTT 的头部注释/元数据（可选） */
+  /** WebVTT / ASS 的头部注释或元数据（可选） */
   header?: string;
+  /** LRC / ELRC 的元数据（ti / ar / al / by / offset / length 等） */
+  metadata?: Record<string, string>;
 }
 
 /**
@@ -53,84 +70,420 @@ export function formatSubtitleTime(seconds: number): string {
 }
 
 const TIME_LINE_RE = /(\d{1,2}:)?\d{1,2}:\d{1,2}[.,]\d{1,3}\s*-->\s*(\d{1,2}:)?\d{1,2}:\d{1,2}[.,]\d{1,3}/;
+const LRC_TAG_RE = /^\s*\[\d{1,2}:\d{1,2}(?:[.:]\d{1,3})?\]/;
 
 /**
- * 解析字幕文本内容
+ * 自动检测格式
  */
-export function parseSubtitle(text: string, format?: 'srt' | 'vtt'): SubtitleParseResult {
-  // 统一换行
-  const normalized = text.replace(/\r\n?/g, '\n').replace(/^\uFEFF/, '');
-  const isVtt = format === 'vtt' || /^WEBVTT/.test(normalized);
-  const actualFormat: 'srt' | 'vtt' = isVtt ? 'vtt' : 'srt';
+function detectFormat(text: string): SubtitleFormat {
+  const trimmed = text.replace(/^\uFEFF/, '').trimStart();
+  if (/^WEBVTT/.test(trimmed)) return 'vtt';
+  if (/^<\?xml/i.test(trimmed) || /<tt\b[^>]*>/i.test(trimmed)) return 'ttml';
+  if (/^\[Script Info\]/im.test(trimmed) || /^Dialogue:/m.test(trimmed)) {
+    // SSA 通常以 "ScriptType: v4.00" 标识，ASS 是 "v4.00+"
+    if (/ScriptType:\s*v4\.00\s*$/im.test(trimmed)) return 'ssa';
+    return 'ass';
+  }
+  if (LRC_TAG_RE.test(trimmed) || /^\[(ti|ar|al|au|by|length|offset|re|ve):/im.test(trimmed)) {
+    if (/<\d{1,2}:\d{1,2}(?:[.:]\d{1,3})?>/.test(trimmed)) return 'elrc';
+    return 'lrc';
+  }
+  return 'srt';
+}
 
+/**
+ * 解析 SRT / WebVTT
+ */
+function parseSrtVtt(text: string, format: 'srt' | 'vtt'): SubtitleParseResult {
+  const normalized = text.replace(/\r\n?/g, '\n').replace(/^\uFEFF/, '');
   const lines = normalized.split('\n');
   const cues: SubtitleCue[] = [];
   let header: string | undefined;
-
   let i = 0;
 
-  // VTT 头部
-  if (isVtt) {
+  if (format === 'vtt') {
     const headerLines: string[] = [];
     while (i < lines.length && lines[i].trim() !== '') {
       headerLines.push(lines[i]);
       i++;
     }
     header = headerLines.join('\n');
-    // 跳过空行
     while (i < lines.length && lines[i].trim() === '') i++;
   }
 
   while (i < lines.length) {
-    // 跳过空行
     while (i < lines.length && lines[i].trim() === '') i++;
     if (i >= lines.length) break;
 
     let id: string | undefined;
     let timeLine: string | null = null;
 
-    // 当前行可能是 id 也可能是时间行
     if (TIME_LINE_RE.test(lines[i])) {
       timeLine = lines[i];
       i++;
     } else {
-      // 当前行视为 id，下一行应为时间行
       id = lines[i].trim() || undefined;
       i++;
       if (i < lines.length && TIME_LINE_RE.test(lines[i])) {
         timeLine = lines[i];
         i++;
       } else {
-        // 非有效 cue 块，跳过
         continue;
       }
     }
 
     if (!timeLine) continue;
-
     const match = timeLine.match(/([\d:.,]+)\s*-->\s*([\d:.,]+)/);
     if (!match) continue;
     const start = parseTimestamp(match[1]);
     const end = parseTimestamp(match[2]);
 
-    // 文本可能有多行，直到空行或结束
     const textLines: string[] = [];
     while (i < lines.length && lines[i].trim() !== '') {
       textLines.push(lines[i]);
       i++;
     }
 
-    cues.push({
-      id,
-      start,
-      end,
-      text: textLines.join('\n'),
-    });
+    cues.push({ id, start, end, text: textLines.join('\n') });
   }
 
+  return { format, cues, header };
+}
+
+/**
+ * 解析 LRC 时间戳 [mm:ss.xx] / [mm:ss.xxx]
+ */
+function parseLrcStamp(min: string, sec: string, frac?: string): number {
+  const m = Number(min);
+  const s = Number(sec);
+  let ms = 0;
+  if (frac) {
+    // 支持两位（厘秒）或三位（毫秒），不足右侧补 0
+    const padded = (frac + '000').slice(0, 3);
+    ms = Number(padded);
+  }
+  return m * 60 + s + ms / 1000;
+}
+
+interface LrcMetaCollector {
+  metadata: Record<string, string>;
+  offsetMs: number;
+}
+
+function parseLrcMeta(line: string, collector: LrcMetaCollector): boolean {
+  const meta = /^\[(ti|ar|al|au|by|length|offset|re|ve):(.*)\]$/i.exec(line.trim());
+  if (!meta) return false;
+  const key = meta[1].toLowerCase();
+  const value = meta[2].trim();
+  collector.metadata[key] = value;
+  if (key === 'offset') {
+    const n = Number(value);
+    if (!isNaN(n)) collector.offsetMs = n;
+  }
+  return true;
+}
+
+/**
+ * 解析 LRC（基础歌词）
+ */
+function parseLrc(text: string): SubtitleParseResult {
+  const normalized = text.replace(/\r\n?/g, '\n').replace(/^\uFEFF/, '');
+  const lines = normalized.split('\n');
+  const collector: LrcMetaCollector = { metadata: {}, offsetMs: 0 };
+  const stampRe = /\[(\d{1,2}):(\d{1,2})(?:[.:](\d{1,3}))?\]/g;
+
+  type Pre = { start: number; text: string };
+  const pre: Pre[] = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    if (parseLrcMeta(line, collector)) continue;
+
+    // 收集行首所有时间戳（一行可能对应多个时间）
+    const stamps: number[] = [];
+    let cursor = 0;
+    stampRe.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = stampRe.exec(line)) !== null) {
+      if (m.index !== cursor) break;
+      stamps.push(parseLrcStamp(m[1], m[2], m[3]));
+      cursor = m.index + m[0].length;
+    }
+    if (stamps.length === 0) continue;
+    const lyric = line.slice(cursor).trim();
+    for (const start of stamps) {
+      pre.push({ start, text: lyric });
+    }
+  }
+
+  pre.sort((a, b) => a.start - b.start);
+  const offset = collector.offsetMs / 1000;
+  const cues: SubtitleCue[] = pre.map((p, i) => {
+    const start = Math.max(0, p.start - offset);
+    const next = pre[i + 1];
+    const end = next ? Math.max(start, next.start - offset) : start + 5;
+    return { start, end, text: p.text };
+  });
+
+  return { format: 'lrc', cues, metadata: collector.metadata };
+}
+
+/**
+ * 解析 ELRC（增强 LRC，支持逐字时间戳）
+ */
+function parseElrc(text: string): SubtitleParseResult {
+  const normalized = text.replace(/\r\n?/g, '\n').replace(/^\uFEFF/, '');
+  const lines = normalized.split('\n');
+  const collector: LrcMetaCollector = { metadata: {}, offsetMs: 0 };
+  const stampRe = /\[(\d{1,2}):(\d{1,2})(?:[.:](\d{1,3}))?\]/g;
+  const wordRe = /<(\d{1,2}):(\d{1,2})(?:[.:](\d{1,3}))?>/g;
+
+  type Pre = { start: number; raw: string };
+  const pre: Pre[] = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    if (parseLrcMeta(line, collector)) continue;
+
+    const stamps: number[] = [];
+    let cursor = 0;
+    stampRe.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = stampRe.exec(line)) !== null) {
+      if (m.index !== cursor) break;
+      stamps.push(parseLrcStamp(m[1], m[2], m[3]));
+      cursor = m.index + m[0].length;
+    }
+    if (stamps.length === 0) continue;
+    const raw = line.slice(cursor);
+    for (const start of stamps) {
+      pre.push({ start, raw });
+    }
+  }
+
+  pre.sort((a, b) => a.start - b.start);
+  const offset = collector.offsetMs / 1000;
+
+  const cues: SubtitleCue[] = pre.map((p, i) => {
+    const words: SubtitleWord[] = [];
+    let plain = '';
+    let cursor = 0;
+    let pendingTime: number | null = null;
+    wordRe.lastIndex = 0;
+    let m: RegExpExecArray | null;
+
+    while ((m = wordRe.exec(p.raw)) !== null) {
+      const before = p.raw.slice(cursor, m.index);
+      if (pendingTime !== null && before) {
+        words.push({ start: Math.max(0, pendingTime - offset), text: before });
+      }
+      plain += before;
+      pendingTime = parseLrcStamp(m[1], m[2], m[3]);
+      cursor = m.index + m[0].length;
+    }
+    const tail = p.raw.slice(cursor);
+    if (pendingTime !== null && tail) {
+      words.push({ start: Math.max(0, pendingTime - offset), text: tail });
+    }
+    plain += tail;
+
+    const start = Math.max(0, p.start - offset);
+    const next = pre[i + 1];
+    const end = next ? Math.max(start, next.start - offset) : start + 5;
+    return {
+      start,
+      end,
+      text: plain.trim(),
+      words: words.length ? words : undefined,
+    };
+  });
+
+  return { format: 'elrc', cues, metadata: collector.metadata };
+}
+
+/**
+ * 解析 ASS / SSA 时间戳 H:MM:SS.cs
+ */
+function parseAssTime(s: string): number {
+  const parts = s.trim().split(':');
+  if (parts.length !== 3) return 0;
+  return Number(parts[0]) * 3600 + Number(parts[1]) * 60 + Number(parts[2].replace(',', '.'));
+}
+
+/**
+ * 解析 ASS / SSA
+ */
+function parseAss(text: string, format: 'ass' | 'ssa'): SubtitleParseResult {
+  const normalized = text.replace(/\r\n?/g, '\n').replace(/^\uFEFF/, '');
+  const lines = normalized.split('\n');
+
+  let section = '';
+  let formatFields: string[] = [];
+  const cues: SubtitleCue[] = [];
+  const headerLines: string[] = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.replace(/\s+$/, '');
+    const trimmed = line.trim();
+
+    const sectionMatch = /^\[([^\]]+)\]\s*$/.exec(trimmed);
+    if (sectionMatch) {
+      section = sectionMatch[1].toLowerCase();
+      headerLines.push(line);
+      continue;
+    }
+
+    if (section !== 'events') {
+      headerLines.push(line);
+      continue;
+    }
+
+    const fmtMatch = /^Format:\s*(.+)$/i.exec(trimmed);
+    if (fmtMatch) {
+      formatFields = fmtMatch[1].split(',').map((s) => s.trim());
+      continue;
+    }
+
+    const evMatch = /^(Dialogue|Comment):\s*(.+)$/i.exec(trimmed);
+    if (!evMatch) continue;
+    if (evMatch[1].toLowerCase() === 'comment') continue;
+    if (formatFields.length === 0) continue;
+
+    // Text 字段是最后一项，可能含逗号 → 用 split 限制次数
+    const n = formatFields.length;
+    const parts = evMatch[2].split(',');
+    const head = parts.slice(0, n - 1);
+    const tail = parts.slice(n - 1).join(',');
+    const obj: Record<string, string> = {};
+    formatFields.forEach((f, idx) => {
+      obj[f] = idx === n - 1 ? tail : head[idx] ?? '';
+    });
+
+    const start = parseAssTime(obj.Start || '');
+    const end = parseAssTime(obj.End || '');
+    const cleanText = (obj.Text || '')
+      .replace(/\\N/g, '\n')
+      .replace(/\\n/g, '\n')
+      .replace(/\\h/g, ' ')
+      .replace(/\{[^}]*\}/g, ''); // 去掉样式覆盖码
+
+    cues.push({ start, end, text: cleanText, style: obj.Style });
+  }
+
+  cues.sort((a, b) => a.start - b.start);
+
   return {
-    format: actualFormat,
+    format,
     cues,
-    header,
+    header: headerLines.join('\n').trim() || undefined,
   };
+}
+
+/**
+ * 解析 TTML 时间值（h / m / s / ms 或 HH:MM:SS.mmm）
+ */
+function parseTtmlTime(value: string): number {
+  const v = value.trim();
+  if (!v) return 0;
+  const unit = /^(\d+(?:\.\d+)?)(h|m|s|ms|f|t)$/i.exec(v);
+  if (unit) {
+    const n = Number(unit[1]);
+    const u = unit[2].toLowerCase();
+    if (u === 'h') return n * 3600;
+    if (u === 'm') return n * 60;
+    if (u === 'ms') return n / 1000;
+    if (u === 's') return n;
+    // f / t (frames / ticks) 没有上下文无法精确换算，按秒近似
+    return n;
+  }
+  const parts = v.split(':');
+  if (parts.length === 3) {
+    return Number(parts[0]) * 3600 + Number(parts[1]) * 60 + Number(parts[2]);
+  }
+  if (parts.length === 2) {
+    return Number(parts[0]) * 60 + Number(parts[1]);
+  }
+  return Number(v) || 0;
+}
+
+/**
+ * 解析 TTML
+ */
+function parseTtml(text: string): SubtitleParseResult {
+  if (typeof DOMParser === 'undefined') {
+    throw new Error('TTML parsing requires a DOMParser environment');
+  }
+  const doc = new DOMParser().parseFromString(text, 'application/xml');
+  const parserError = doc.getElementsByTagName('parsererror');
+  if (parserError.length > 0) {
+    throw new Error('TTML XML parse error');
+  }
+
+  const ps = doc.getElementsByTagName('p');
+  const cues: SubtitleCue[] = [];
+
+  for (let i = 0; i < ps.length; i++) {
+    const p = ps[i];
+    const begin = p.getAttribute('begin') || '';
+    const endAttr = p.getAttribute('end') || '';
+    const dur = p.getAttribute('dur') || '';
+    const start = parseTtmlTime(begin);
+    let end: number;
+    if (endAttr) {
+      end = parseTtmlTime(endAttr);
+    } else if (dur) {
+      end = start + parseTtmlTime(dur);
+    } else {
+      end = start + 5;
+    }
+
+    // 把 <br/> 换成 \n，其他子元素取文本
+    let textParts = '';
+    p.childNodes.forEach((node) => {
+      if (node.nodeType === 3) {
+        textParts += node.nodeValue || '';
+      } else if (node.nodeType === 1) {
+        const el = node as Element;
+        if (el.tagName.toLowerCase() === 'br') {
+          textParts += '\n';
+        } else {
+          textParts += el.textContent || '';
+        }
+      }
+    });
+    const cleaned = textParts.replace(/[ \t]+/g, ' ').replace(/\n /g, '\n').trim();
+    if (cleaned || start || end) {
+      cues.push({ start, end, text: cleaned });
+    }
+  }
+
+  cues.sort((a, b) => a.start - b.start);
+  return { format: 'ttml', cues };
+}
+
+/**
+ * 解析时间文本（字幕 / 歌词）。
+ * 自动识别格式，也可通过 format 参数显式指定。
+ */
+export function parseSubtitle(text: string, format?: SubtitleFormat): SubtitleParseResult {
+  const detected = format ?? detectFormat(text);
+  switch (detected) {
+    case 'lrc':
+      return parseLrc(text);
+    case 'elrc':
+      return parseElrc(text);
+    case 'ass':
+      return parseAss(text, 'ass');
+    case 'ssa':
+      return parseAss(text, 'ssa');
+    case 'ttml':
+      return parseTtml(text);
+    case 'vtt':
+      return parseSrtVtt(text, 'vtt');
+    case 'srt':
+    default:
+      return parseSrtVtt(text, 'srt');
+  }
 }
