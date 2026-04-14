@@ -51,7 +51,7 @@ export {
 export type { ZipEntryInfo, ZipTreeNode } from './utils/zipReader';
 
 // 导出 Excel 数据转换
-export { convertWorkbookToSpreadsheetData } from './utils/excelDataConverter';
+export { convertWorkbookToSpreadsheetData, convertCsvToSpreadsheetData } from './utils/excelDataConverter';
 
 // 导出 PDF.js Worker 配置
 export { configurePdfWorker } from './utils/pdfWorker';

@@ -371,3 +371,38 @@ export function convertWorkbookToSpreadsheetData(
 
   return result;
 }
+
+/**
+ * 将解析后的 CSV/TSV 数据转换为 x-data-spreadsheet 数据格式
+ */
+export function convertCsvToSpreadsheetData(
+  header: string[],
+  rows: string[][],
+  sheetName = 'Sheet1'
+): XSheetData[] {
+  const hasHeader = header.length > 0;
+  const headerStyle: XCellStyle = { font: { bold: true } };
+  const styles: XCellStyle[] = hasHeader ? [headerStyle] : [];
+  const xRows: Record<string, XRowData> = {};
+
+  if (hasHeader) {
+    const cells: Record<string, XCellData> = {};
+    header.forEach((h, i) => {
+      cells[String(i)] = { text: h, style: 0 };
+    });
+    xRows['0'] = { cells };
+  }
+
+  const offset = hasHeader ? 1 : 0;
+  rows.forEach((row, ri) => {
+    const cells: Record<string, XCellData> = {};
+    row.forEach((val, ci) => {
+      if (val !== undefined && val !== '') {
+        cells[String(ci)] = { text: val };
+      }
+    });
+    xRows[String(ri + offset)] = { cells };
+  });
+
+  return [{ name: sheetName, styles, rows: xRows }];
+}

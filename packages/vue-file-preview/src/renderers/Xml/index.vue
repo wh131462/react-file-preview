@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { Code } from 'lucide-vue-next';
 import { fetchTextUtf8 } from '@eternalheart/file-preview-core';
 import { codeToHtml } from 'shiki';
 import { useTranslator } from '../../composables/useTranslator';
@@ -89,26 +88,13 @@ watch(() => props.url, load, { immediate: true });
     </div>
   </div>
 
-  <div v-else class="vfp-w-full vfp-h-full vfp-overflow-auto vfp-p-4 md:vfp-p-8">
-    <div
-      class="vfp-max-w-full md:vfp-max-w-6xl vfp-mx-auto vfp-bg-white/5 vfp-backdrop-blur-sm vfp-rounded-2xl vfp-border vfp-border-white/10 vfp-overflow-hidden"
+  <div v-else class="vfp-w-full vfp-h-full vfp-overflow-auto" style="background: #1e1e1e;">
+    <pre
+      v-if="!highlighted"
+      class="vfp-p-6 vfp-text-white/90 vfp-font-mono vfp-text-sm vfp-whitespace-pre-wrap vfp-break-words"
+      >{{ content }}</pre
     >
-      <div
-        class="vfp-flex vfp-items-center vfp-gap-2 md:vfp-gap-3 vfp-px-4 vfp-py-3 md:vfp-px-6 md:vfp-py-4 vfp-bg-white/5 vfp-border-b vfp-border-white/10"
-      >
-        <Code class="vfp-w-4 vfp-h-4 md:vfp-w-5 md:vfp-h-5 vfp-text-white/70 vfp-flex-shrink-0" />
-        <span class="vfp-text-white vfp-font-medium vfp-text-sm md:vfp-text-base vfp-truncate">{{ fileName }}</span>
-        <span class="vfp-ml-auto vfp-text-xs vfp-text-white/50 vfp-uppercase vfp-flex-shrink-0">XML</span>
-      </div>
-      <div class="vfp-text-sm">
-        <pre
-          v-if="!highlighted"
-          class="vfp-p-6 vfp-text-white/90 vfp-font-mono vfp-whitespace-pre-wrap vfp-break-words"
-          >{{ content }}</pre
-        >
-        <div v-else class="shiki-wrapper" v-html="highlighted" />
-      </div>
-    </div>
+    <div v-else class="shiki-wrapper" v-html="highlighted" />
   </div>
 </template>
 

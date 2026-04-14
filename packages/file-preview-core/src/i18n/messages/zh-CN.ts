@@ -92,6 +92,7 @@ export const zhCN: Messages = {
   'json.keys': 'keys',
 
   // ─────── csv ───────
+  'csv.loading': '加载 CSV 中...',
   'csv.load_failed': 'CSV 文件加载失败',
   'csv.parse_failed': 'CSV 解析失败',
 

@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { FileSpreadsheet } from 'lucide-vue-next';
-import { parseCsv, guessCsvDelimiter, fetchTextUtf8, type CsvParseResult } from '@eternalheart/file-preview-core';
+import Spreadsheet from 'x-data-spreadsheet';
+import 'x-data-spreadsheet/dist/xspreadsheet.css';
+import {
+  parseCsv,
+  guessCsvDelimiter,
+  fetchTextUtf8,
+  convertCsvToSpreadsheetData,
+} from '@eternalheart/file-preview-core';
 import { useTranslator } from '../../composables/useTranslator';
 
 const props = defineProps<{
@@ -11,117 +18,161 @@ const props = defineProps<{
 
 const { t } = useTranslator();
 
-const text = ref<string>('');
 const loading = ref(true);
 const error = ref<string | null>(null);
+const containerRef = ref<HTMLDivElement | null>(null);
+let sheetData: Record<string, unknown>[] | null = null;
+let resizeObserver: ResizeObserver | null = null;
+let resizeTimeout: number | null = null;
+let lastDimensions = { width: 0, height: 0 };
 
-const load = async () => {
+const calculateDimensions = () => {
+  if (!containerRef.value) return { width: 800, height: 600 };
+  const rawWidth = containerRef.value.clientWidth;
+  const rawHeight = containerRef.value.clientHeight;
+  const width = rawWidth > 100 ? rawWidth : 800;
+  const height = rawHeight > 100 ? rawHeight : 600;
+  return { width, height };
+};
+
+const mountSpreadsheet = () => {
+  if (!containerRef.value || !sheetData) return;
+
+  containerRef.value.innerHTML = '';
+
+  const { width, height } = calculateDimensions();
+  const isMobile = width < 640;
+
+  const s = new Spreadsheet(containerRef.value, {
+    mode: 'read',
+    showToolbar: false,
+    showContextmenu: false,
+    showGrid: true,
+    row: {
+      len: 100,
+      height: 25,
+    },
+    col: {
+      len: 26,
+      width: isMobile ? 80 : 100,
+      indexWidth: isMobile ? 40 : 60,
+      minWidth: isMobile ? 40 : 60,
+    },
+    view: {
+      height: () => height,
+      width: () => width,
+    },
+  });
+
+  s.loadData(sheetData as unknown as Record<string, unknown>);
+};
+
+const loadCsv = async () => {
+  if (!containerRef.value) return;
+
   loading.value = true;
   error.value = null;
+
   try {
-    text.value = await fetchTextUtf8(props.url);
+    const text = await fetchTextUtf8(props.url);
+    const parsed = parseCsv(text, { delimiter: guessCsvDelimiter(props.fileName) });
+    const data = convertCsvToSpreadsheetData(parsed.header, parsed.rows, props.fileName);
+
+    sheetData = data as unknown as Record<string, unknown>[];
+    mountSpreadsheet();
+    loading.value = false;
   } catch (err) {
-    console.error(err);
+    console.error('CSV 解析错误:', err);
     error.value = t.value('csv.load_failed');
-  } finally {
     loading.value = false;
   }
 };
 
-watch(() => props.url, load, { immediate: true });
+onMounted(() => {
+  if (!containerRef.value) return;
 
-const parsed = computed<CsvParseResult | null>(() => {
-  if (!text.value) return null;
-  try {
-    return parseCsv(text.value, { delimiter: guessCsvDelimiter(props.fileName) });
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
+  let isInitialRender = true;
+
+  resizeObserver = new ResizeObserver(() => {
+    if (isInitialRender) {
+      isInitialRender = false;
+      lastDimensions = calculateDimensions();
+      return;
+    }
+
+    const newDimensions = calculateDimensions();
+    const widthDiff = Math.abs(lastDimensions.width - newDimensions.width);
+    const heightDiff = Math.abs(lastDimensions.height - newDimensions.height);
+
+    if (widthDiff < 10 && heightDiff < 10) return;
+
+    lastDimensions = newDimensions;
+
+    if (resizeTimeout !== null) clearTimeout(resizeTimeout);
+
+    resizeTimeout = window.setTimeout(() => {
+      if (sheetData) mountSpreadsheet();
+    }, 500);
+  });
+
+  resizeObserver.observe(containerRef.value);
+
+  setTimeout(() => {
+    requestAnimationFrame(() => loadCsv());
+  }, 100);
 });
 
-const label = computed(() => (parsed.value?.delimiter === '\t' ? 'TSV' : 'CSV'));
-const columns = computed(() =>
-  parsed.value ? Array.from({ length: parsed.value.columnCount }, (_, i) => i) : []
+watch(
+  () => props.url,
+  () => {
+    loadCsv();
+  }
 );
-const hasHeader = computed(() => !!parsed.value?.header.length);
+
+onBeforeUnmount(() => {
+  if (resizeObserver) resizeObserver.disconnect();
+  if (resizeTimeout !== null) clearTimeout(resizeTimeout);
+  sheetData = null;
+  if (containerRef.value) containerRef.value.innerHTML = '';
+});
 </script>
 
 <template>
-  <div v-if="loading" class="vfp-flex vfp-items-center vfp-justify-center vfp-w-full vfp-h-full">
+  <div class="vfp-relative vfp-flex vfp-flex-col vfp-items-center vfp-w-full vfp-h-full">
     <div
-      class="vfp-w-12 vfp-h-12 vfp-border-4 vfp-border-white/20 vfp-border-t-white vfp-rounded-full vfp-animate-spin"
+      v-if="loading"
+      class="vfp-absolute vfp-inset-0 vfp-flex vfp-items-center vfp-justify-center vfp-bg-black/50 vfp-backdrop-blur-sm vfp-z-10 vfp-rounded-xl md:vfp-rounded-2xl"
+    >
+      <div class="vfp-text-center">
+        <div
+          class="vfp-w-10 vfp-h-10 md:vfp-w-12 md:vfp-h-12 vfp-mx-auto vfp-mb-3 vfp-border-4 vfp-border-white/20 vfp-border-t-white vfp-rounded-full vfp-animate-spin"
+        />
+        <p class="vfp-text-xs md:vfp-text-sm vfp-text-white/70 vfp-font-medium">{{ t('csv.loading') }}</p>
+      </div>
+    </div>
+
+    <div
+      v-if="error && !loading"
+      class="vfp-absolute vfp-inset-0 vfp-flex vfp-items-center vfp-justify-center vfp-bg-black/50 vfp-backdrop-blur-sm vfp-z-10 vfp-rounded-xl md:vfp-rounded-2xl"
+    >
+      <div class="vfp-text-center vfp-max-w-sm md:vfp-max-w-md vfp-px-4">
+        <div
+          class="vfp-w-24 vfp-h-24 md:vfp-w-32 md:vfp-h-32 vfp-mx-auto vfp-mb-4 md:vfp-mb-6 vfp-rounded-2xl md:vfp-rounded-3xl vfp-bg-gradient-to-br vfp-from-green-500 vfp-via-emerald-500 vfp-to-teal-500 vfp-flex vfp-items-center vfp-justify-center vfp-shadow-2xl"
+        >
+          <FileSpreadsheet class="vfp-w-12 vfp-h-12 md:vfp-w-16 md:vfp-h-16 vfp-text-white" />
+        </div>
+        <p class="vfp-text-lg md:vfp-text-xl vfp-text-white/90 vfp-mb-2 md:vfp-mb-3 vfp-font-medium">
+          {{ t('csv.load_failed') }}
+        </p>
+        <p class="vfp-text-xs md:vfp-text-sm vfp-text-white/60 vfp-mb-4 md:vfp-mb-6">{{ error }}</p>
+      </div>
+    </div>
+
+    <div
+      v-if="!error"
+      ref="containerRef"
+      class="xlsx-spreadsheet-container vfp-w-full vfp-h-full"
+      :style="{ opacity: loading ? 0 : 1 }"
     />
   </div>
-
-  <div
-    v-else-if="error || !parsed"
-    class="vfp-flex vfp-items-center vfp-justify-center vfp-w-full vfp-h-full"
-  >
-    <div class="vfp-text-white/70 vfp-text-center">
-      <p class="vfp-text-lg">{{ error || t('csv.parse_failed') }}</p>
-    </div>
-  </div>
-
-  <div v-else class="vfp-w-full vfp-h-full vfp-overflow-auto vfp-p-4 md:vfp-p-8">
-    <div
-      class="vfp-max-w-full md:vfp-max-w-6xl vfp-mx-auto vfp-bg-white/5 vfp-backdrop-blur-sm vfp-rounded-2xl vfp-border vfp-border-white/10 vfp-overflow-hidden"
-    >
-      <div
-        class="vfp-flex vfp-items-center vfp-gap-2 md:vfp-gap-3 vfp-px-4 vfp-py-3 md:vfp-px-6 md:vfp-py-4 vfp-bg-white/5 vfp-border-b vfp-border-white/10"
-      >
-        <FileSpreadsheet class="vfp-w-4 vfp-h-4 md:vfp-w-5 md:vfp-h-5 vfp-text-white/70 vfp-flex-shrink-0" />
-        <span class="vfp-text-white vfp-font-medium vfp-text-sm md:vfp-text-base vfp-truncate">{{ fileName }}</span>
-        <span class="vfp-ml-auto vfp-text-xs vfp-text-white/50 vfp-uppercase vfp-flex-shrink-0">
-          {{ label }} · {{ parsed.rows.length }} rows · {{ parsed.columnCount }} cols
-        </span>
-      </div>
-
-      <div class="vfp-overflow-auto vfp-text-sm vfp-text-white/90">
-        <table class="csv-table">
-          <thead v-if="hasHeader">
-            <tr>
-              <th v-for="c in columns" :key="'h-' + c">{{ parsed.header[c] ?? '' }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, ri) in parsed.rows" :key="'r-' + ri" :class="{ odd: ri % 2 === 1 }">
-              <td v-for="c in columns" :key="'c-' + ri + '-' + c">{{ row[c] ?? '' }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 </template>
-
-<style scoped>
-.csv-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-.csv-table thead {
-  position: sticky;
-  top: 0;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
-}
-.csv-table th {
-  text-align: left;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-}
-.csv-table td {
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-.csv-table tbody tr.odd {
-  background: rgba(255, 255, 255, 0.05);
-}
-</style>

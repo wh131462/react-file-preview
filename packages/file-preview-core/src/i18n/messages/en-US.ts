@@ -92,6 +92,7 @@ export const enUS: Messages = {
   'json.keys': 'keys',
 
   // ─────── csv ───────
+  'csv.loading': 'Loading CSV...',
   'csv.load_failed': 'Failed to load CSV',
   'csv.parse_failed': 'Failed to parse CSV',
 
