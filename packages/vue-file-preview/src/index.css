@@ -67,6 +67,101 @@
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  text-align: left;
+}
+
+/* 作用域化 Preflight Reset —— 防止父页面 CSS 污染 */
+.vfp-root *,
+.vfp-root ::before,
+.vfp-root ::after {
+  border-width: 0;
+  border-style: solid;
+}
+
+.vfp-root p,
+.vfp-root h1,
+.vfp-root h2,
+.vfp-root h3,
+.vfp-root h4,
+.vfp-root h5,
+.vfp-root h6,
+.vfp-root ul,
+.vfp-root ol,
+.vfp-root li,
+.vfp-root dl,
+.vfp-root dt,
+.vfp-root dd,
+.vfp-root blockquote,
+.vfp-root figure,
+.vfp-root fieldset,
+.vfp-root legend {
+  margin: 0;
+  padding: 0;
+}
+
+.vfp-root h1,
+.vfp-root h2,
+.vfp-root h3,
+.vfp-root h4,
+.vfp-root h5,
+.vfp-root h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.vfp-root a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.vfp-root ul,
+.vfp-root ol {
+  list-style: none;
+}
+
+.vfp-root img,
+.vfp-root video {
+  max-width: 100%;
+  height: auto;
+}
+
+.vfp-root button,
+.vfp-root [type='button'],
+.vfp-root [type='reset'],
+.vfp-root [type='submit'] {
+  -webkit-appearance: button;
+  background-color: transparent;
+  background-image: none;
+  cursor: pointer;
+}
+
+.vfp-root input,
+.vfp-root textarea,
+.vfp-root select {
+  font-family: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+.vfp-root table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.vfp-root pre,
+.vfp-root code,
+.vfp-root kbd,
+.vfp-root samp {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 1em;
 }
 
 /* 作用域内滚动条样式 */

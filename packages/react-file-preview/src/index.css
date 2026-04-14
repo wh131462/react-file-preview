@@ -67,6 +67,101 @@
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  text-align: left;
+}
+
+/* 作用域化 Preflight Reset —— 防止父页面 CSS 污染 */
+.rfp-root *,
+.rfp-root ::before,
+.rfp-root ::after {
+  border-width: 0;
+  border-style: solid;
+}
+
+.rfp-root p,
+.rfp-root h1,
+.rfp-root h2,
+.rfp-root h3,
+.rfp-root h4,
+.rfp-root h5,
+.rfp-root h6,
+.rfp-root ul,
+.rfp-root ol,
+.rfp-root li,
+.rfp-root dl,
+.rfp-root dt,
+.rfp-root dd,
+.rfp-root blockquote,
+.rfp-root figure,
+.rfp-root fieldset,
+.rfp-root legend {
+  margin: 0;
+  padding: 0;
+}
+
+.rfp-root h1,
+.rfp-root h2,
+.rfp-root h3,
+.rfp-root h4,
+.rfp-root h5,
+.rfp-root h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.rfp-root a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.rfp-root ul,
+.rfp-root ol {
+  list-style: none;
+}
+
+.rfp-root img,
+.rfp-root video {
+  max-width: 100%;
+  height: auto;
+}
+
+.rfp-root button,
+.rfp-root [type='button'],
+.rfp-root [type='reset'],
+.rfp-root [type='submit'] {
+  -webkit-appearance: button;
+  background-color: transparent;
+  background-image: none;
+  cursor: pointer;
+}
+
+.rfp-root input,
+.rfp-root textarea,
+.rfp-root select {
+  font-family: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+.rfp-root table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.rfp-root pre,
+.rfp-root code,
+.rfp-root kbd,
+.rfp-root samp {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 1em;
 }
 
 /* 作用域内滚动条样式 */
