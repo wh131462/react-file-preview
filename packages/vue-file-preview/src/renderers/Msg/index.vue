@@ -163,7 +163,7 @@ const formatAttachmentSize = (size: number | undefined) => {
     </div>
   </div>
 
-  <div v-else class="vfp-w-full vfp-h-full vfp-overflow-auto" style="background: rgba(0, 0, 0, 0.15)">
+  <div v-else class="vfp-w-full vfp-h-full vfp-overflow-auto" style="background: white">
     <div class="msg-container">
       <!-- 邮件头部 -->
       <div class="msg-header">
@@ -267,11 +267,8 @@ const formatAttachmentSize = (size: number | undefined) => {
 <style scoped>
 .msg-container {
   width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
   background: white;
   min-height: 100%;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 }
 .msg-header {
   border-bottom: 1px solid #e5e7eb;

@@ -189,16 +189,13 @@ export const MsgRenderer: React.FC<MsgRendererProps> = ({ url }) => {
   return (
     <div
       className="rfp-w-full rfp-h-full rfp-overflow-auto"
-      style={{ background: 'rgba(0, 0, 0, 0.15)' }}
+      style={{ background: 'white' }}
     >
       <div
         style={{
           width: '100%',
-          maxWidth: '900px',
-          margin: '0 auto',
           background: 'white',
           minHeight: '100%',
-          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.15)',
         }}
       >
         {/* 邮件头部 */}
